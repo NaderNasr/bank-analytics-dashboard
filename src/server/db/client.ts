@@ -1,11 +1,15 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import * as schema from "./schema";
 
-/** Shared by the app (via ./index.ts) and Node scripts such as the seed. */
-export function createDb(databaseUrl: string) {
-  return drizzle({ client: neon(databaseUrl), schema, casing: "snake_case" });
+/**
+ * One factory for the app (via ./index.ts) and Node scripts such as the seed. node-postgres works
+ * with Neon (pooled connection string) and with a plain local Postgres. See DECISIONS.md 003.
+ */
+export function createDb(databaseUrl: string, options: { max?: number } = {}) {
+  const pool = new Pool({ connectionString: databaseUrl, max: options.max ?? 5 });
+  return drizzle({ client: pool, schema, casing: "snake_case" });
 }
 
 export type Db = ReturnType<typeof createDb>;

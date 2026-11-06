@@ -1,4 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS pg_trgm;--> statement-breakpoint
 CREATE TYPE "public"."account_type" AS ENUM('current', 'savings', 'card');--> statement-breakpoint
 CREATE TYPE "public"."category_kind" AS ENUM('income', 'expense', 'transfer');--> statement-breakpoint
 CREATE TYPE "public"."txn_channel" AS ENUM('card_present', 'online', 'transfer', 'direct_debit', 'standing_order', 'atm');--> statement-breakpoint
@@ -46,7 +45,7 @@ CREATE TABLE "transactions" (
 	"occurred_at" timestamp with time zone NOT NULL,
 	"posted_at" timestamp with time zone,
 	"transfer_group_id" uuid,
-	"reversal_of_id" uuid,
+	"refund_of_id" uuid,
 	CONSTRAINT "transactions_reference_unique" UNIQUE("reference"),
 	CONSTRAINT "transactions_amount_positive" CHECK ("transactions"."amount_minor" > 0)
 );
@@ -64,7 +63,7 @@ ALTER TABLE "merchants" ADD CONSTRAINT "merchants_default_category_id_categories
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_account_id_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_merchant_id_merchants_id_fk" FOREIGN KEY ("merchant_id") REFERENCES "public"."merchants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_reversal_of_fk" FOREIGN KEY ("reversal_of_id") REFERENCES "public"."transactions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_refund_of_fk" FOREIGN KEY ("refund_of_id") REFERENCES "public"."transactions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "accounts_user_idx" ON "accounts" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "merchants_name_uq" ON "merchants" USING btree ("name");--> statement-breakpoint
 CREATE INDEX "transactions_account_occurred_idx" ON "transactions" USING btree ("account_id","occurred_at" DESC NULLS LAST,"id");--> statement-breakpoint

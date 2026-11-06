@@ -17,8 +17,17 @@ import {
 /**
  * Retail banking demo schema.
  *
- * Money is stored as integer minor units (fils/cents) in `bigint` columns, read as JS numbers.
- * Amounts are always positive; `direction` says which way the money moved. See DECISIONS.md 002.
+ * Money is stored as integer minor units in `bigint` columns, read as JS numbers. The exponent comes
+ * from the currency: JOD has 3 decimals, so 1 JOD = 1000 fils. Amounts are always positive;
+ * `direction` says which way the money moved. See DECISIONS.md 002.
+ *
+ * Status semantics:
+ * - posted   – settled; counts towards the balance.
+ * - pending  – authorised, not yet settled; shown, but not in the balance.
+ * - failed   – declined; no money moved.
+ * - reversed – settled, then cancelled by the bank (e.g. a duplicate charge); net zero, excluded.
+ * A merchant refund is a separate posted credit whose `refund_of_id` points at the purchase.
+ * Balance = opening balance + posted credits − posted debits.
  */
 
 // ── Enums ────────────────────────────────────────────────────────────────────
@@ -122,14 +131,14 @@ export const transactions = pgTable(
     postedAt: timestamp("posted_at", { withTimezone: true }),
     /** Links the two legs of a transfer between the customer's own accounts. */
     transferGroupId: uuid("transfer_group_id"),
-    /** Set on a refund/reversal: points at the transaction it undoes. */
-    reversalOfId: uuid("reversal_of_id"),
+    /** Set on a merchant refund (a posted credit): points at the purchase it refunds. */
+    refundOfId: uuid("refund_of_id"),
   },
   (t) => [
     check("transactions_amount_positive", sql`${t.amountMinor} > 0`),
     foreignKey({
-      name: "transactions_reversal_of_fk",
-      columns: [t.reversalOfId],
+      name: "transactions_refund_of_fk",
+      columns: [t.refundOfId],
       foreignColumns: [t.id],
     }),
     // Explorer default view: one account, newest first; also the keyset pagination key.
@@ -176,8 +185,8 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
   account: one(accounts, { fields: [transactions.accountId], references: [accounts.id] }),
   category: one(categories, { fields: [transactions.categoryId], references: [categories.id] }),
   merchant: one(merchants, { fields: [transactions.merchantId], references: [merchants.id] }),
-  reversalOf: one(transactions, {
-    fields: [transactions.reversalOfId],
+  refundOf: one(transactions, {
+    fields: [transactions.refundOfId],
     references: [transactions.id],
   }),
 }));
