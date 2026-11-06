@@ -7,6 +7,13 @@ recorded in [docs/DECISIONS.md](docs/DECISIONS.md).
 ## Requirements
 
 - Node.js 22+ (see `.nvmrc`)
+- Postgres 16+ with `pg_trgm` (Neon, or a local install)
+
+## Database setup
+
+1. Copy `.env.example` to `.env.local` and set `DATABASE_URL`.
+2. `npm run db:migrate` creates the tables.
+3. `npm run db:seed` loads the demo customer (about 12,000 transactions; replaces existing data).
 
 ## Scripts
 

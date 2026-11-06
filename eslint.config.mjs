@@ -6,6 +6,15 @@ import prettier from "eslint-config-prettier/flat";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      // Allow intentionally unused bindings when prefixed with "_", e.g. `({ key: _key, ...rest })`.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", destructuredArrayIgnorePattern: "^_" },
+      ],
+    },
+  },
   // Must stay last: turns off stylistic rules that Prettier owns.
   prettier,
   globalIgnores([

@@ -85,14 +85,18 @@ Rules that go with it:
 
 ### Decision
 
-- Drizzle ORM on Neon Postgres (`drizzle-orm/neon-http`). Schema in `src/server/db/schema.ts`,
-  SQL migrations generated into `drizzle/`.
+- Drizzle ORM on Postgres (Neon in production; driver choice in 003). Schema in
+  `src/server/db/schema.ts`, SQL migrations generated into `drizzle/`.
 - Money is stored as positive integer minor units (`bigint`, read as JS `number`) plus an explicit
-  `direction` (debit/credit) and an ISO 4217 `currency`. No floats, no signed amounts.
+  `direction` (debit/credit) and an ISO 4217 `currency`. No floats, no signed amounts. The demo
+  uses JOD, which has **three** decimals (1 JOD = 1000 fils), so the number of decimals always
+  comes from the currency (`src/lib/money.ts`), never a hard-coded `/ 100`.
 - Account balances are derived (opening balance + posted transactions), never stored.
 - Categories store only a `slug`; English and Arabic labels live in the i18n message files.
-- Transfers between own accounts share a `transfer_group_id`; reversals point at the original via
-  `reversal_of_id`.
+- Transfers between own accounts share a `transfer_group_id`; merchant refunds are separate posted
+  credits that point at the purchase via `refund_of_id`.
+- Status semantics: `posted` counts towards the balance; `pending` (authorised, not settled),
+  `failed` (declined) and `reversed` (settled then cancelled by the bank) do not.
 - `pg_trgm` GIN index on `description` for substring search; btree indexes match the explorer's
   sort and filter paths.
 - Env vars are validated with zod (`src/lib/env.ts`); the DB client imports `server-only`.
@@ -105,3 +109,49 @@ Rules that go with it:
   seed. At ~12k rows the aggregate is cheap.
 - **Full-text search (`tsvector`).** Better for words in long text; trigram suits short merchant-style
   descriptions and partial matches like "carr" → "Carrefour".
+
+---
+
+## 003 — node-postgres driver and a simulated, deterministic seed
+
+**Date:** 2026-11-06 · **Phase:** 1
+
+### Context
+
+The seed must produce the same ~12,000 transactions every time, look like a real person's
+account, and run against both Neon and a local Postgres (for development and CI without a cloud
+database).
+
+### Decision
+
+- **Driver:** `drizzle-orm/node-postgres` with a `pg` pool, created by `createDb()` in
+  `src/server/db/client.ts`. It works with Neon's pooled connection string and with plain Postgres,
+  and supports real transactions, which the seed uses.
+- **Generator is pure** (`src/server/db/seed/generate.ts`): a seeded faker instance, a fixed end
+  date (`2026-11-01`) and no clock or I/O. The writer (`run.ts`) truncates and inserts in one
+  transaction, in batches of 1,000 rows.
+- **Day-by-day simulation in Amman time (UTC+3)** with running balances, so patterns emerge
+  rather than being sprinkled on:
+  - salary on the 25th (moved to Thursday if it falls on the Friday/Saturday weekend), with a
+    raise after 12 months;
+  - rent standing order on the 1st, direct debits for telecom, utilities (seasonal peaks) and the
+    gym, card subscriptions on fixed days;
+  - everyday purchases drawn from a weighted merchant list, with more of them and pricier ones at
+    the weekend;
+  - card statement paid in full on the 5th; a fixed saving plus a sweep of surplus on the 26th;
+    savings top up the current account when it runs low;
+  - card purchases decline when they would exceed the credit limit, debit purchases on
+    insufficient funds, plus a small random decline rate; rare bank reversals; occasional full or
+    partial refunds; foreign-transaction fees; pending status for the last two days.
+- Unit tests assert the invariants (determinism, volume, monthly cycles, weekend uplift, status
+  mix, refund and transfer links, never overdrawn).
+
+### Alternatives considered
+
+- **`@neondatabase/serverless` (HTTP driver).** Lowest latency on serverless, but it only talks
+  to Neon and the HTTP mode has no interactive transactions. Can be swapped in later behind
+  `createDb()` if cold-start latency matters.
+- **Independent random rows per pattern.** Simpler, but balances go negative and the cash-flow
+  chart tells no story. Simulation costs ~100 ms.
+- **Seed relative to "today".** Always-fresh dates, but no longer deterministic; the end date can
+  be moved with `npm run db:seed -- --end YYYY-MM-DD` instead.
