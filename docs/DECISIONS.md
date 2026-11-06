@@ -155,3 +155,44 @@ database).
   chart tells no story. Simulation costs ~100 ms.
 - **Seed relative to "today".** Always-fresh dates, but no longer deterministic; the end date can
   be moved with `npm run db:seed -- --end YYYY-MM-DD` instead.
+
+---
+
+## 004 — REST API: shared zod contract, pure SQL builders, offset pagination
+
+**Date:** 2026-11-06 · **Phase:** 1
+
+### Decision
+
+- **Endpoints:** `GET /api/transactions`, `GET /api/transactions/[id]`, `GET /api/summary`,
+  `GET /api/accounts`. JSON only, `Cache-Control: private, no-store`, errors as
+  `{ error: { code, message, issues? } }` with 400/401/404/500.
+- **One contract for server and client.** Query schemas (zod) and response types live in
+  `src/lib/api/` and are safe to import in the browser, so the explorer (Phase 5) builds URLs
+  against the same rules the server enforces. Multi-value filters accept `?x=a&x=b` and `?x=a,b`.
+  Amount filters are given in JOD and converted to fils on parse.
+- **Pure SQL builders** (`src/server/queries/transactions-sql.ts`) turn validated params into
+  Drizzle `WHERE`/`ORDER BY` fragments. Tests render them with `PgDialect` and assert the SQL and
+  bind parameters, with no database needed in CI.
+- **Search** is `ILIKE` over description, merchant name and reference, with `%`/`_` escaped and
+  the value always bound as a parameter. The trigram index serves it as data grows.
+- **Offset pagination** (`page`, `pageSize` ≤ 200) with a total count, ordered by the sort column,
+  then `occurred_at`, then `id`, so pages never overlap when values tie.
+- **Dates** in the API are local days (`YYYY-MM-DD`, Amman time, inclusive) converted to a
+  half-open UTC range on the server.
+- **Summary semantics:** income excludes refunds and transfers; spending is expense debits minus
+  refunds; only `posted` rows count. The default range is the 12 calendar months ending on the
+  user's **latest transaction**, not the server clock, so a seeded demo never shows empty months.
+  KPIs come with the previous period of equal length for deltas.
+- **Lazy env and DB client** (`getServerEnv()`, `getDb()`): `next build` imports every route to
+  collect config, so validating at import time made builds require a database.
+- `getCurrentUserId()` resolves the seeded demo user for now; Phase 2 swaps in the session
+  without touching the routes.
+
+### Alternatives considered
+
+- **Keyset (cursor) pagination.** Faster for deep pages and immune to inserts shifting rows, but
+  it cannot jump to an arbitrary page and makes "row N of 11,850" for a virtualised table awkward.
+  At this size offset scans are a few milliseconds; revisit beyond ~1M rows.
+- **Server Actions or tRPC instead of REST.** Less boilerplate inside Next, but the brief asks for
+  REST, and plain HTTP endpoints are easy to demo with curl and to cache later.
