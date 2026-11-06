@@ -1,5 +1,6 @@
 import { Faker, en } from "@faker-js/faker";
 
+import { DEMO_USER_EMAIL } from "@/lib/constants";
 import { toMinor } from "@/lib/money";
 
 import {
@@ -179,7 +180,7 @@ export function generateSeedData(options: SeedOptions = {}): SeedData {
   // ── Customer and accounts ──
   const user: SeedUser = {
     id: faker.string.uuid(),
-    email: "demo@bank-analytics.dev",
+    email: DEMO_USER_EMAIL,
     name: "Layla Haddad",
     createdAt: addMonths(start, -30),
   };
