@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test("home page renders the app name", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bank Analytics Dashboard");
+test("sign-in page renders", async ({ page }) => {
+  await page.goto("/sign-in");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sign in");
+  await expect(page.getByRole("button", { name: "Sign in" })).toBeEnabled();
 });

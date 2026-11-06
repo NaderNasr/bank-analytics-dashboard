@@ -28,12 +28,15 @@ export interface SeedOptions {
   /** First local day after the simulated period, as "YYYY-MM-DD". */
   endDate?: string;
   months?: number;
+  /** Sign-in email of the demo customer. */
+  email?: string;
 }
 
 export const DEFAULT_SEED_OPTIONS = {
   seed: 20_261_106,
   endDate: "2026-11-01",
   months: 18,
+  email: DEMO_USER_EMAIL,
 } as const satisfies Required<SeedOptions>;
 
 type AccountKey = "current" | "savings" | "card";
@@ -168,7 +171,7 @@ interface PlannedEvent {
 }
 
 export function generateSeedData(options: SeedOptions = {}): SeedData {
-  const { seed, endDate, months } = { ...DEFAULT_SEED_OPTIONS, ...options };
+  const { seed, endDate, months, email } = { ...DEFAULT_SEED_OPTIONS, ...options };
   const faker = new Faker({ locale: [en] });
   faker.seed(seed);
   const rand = () => faker.number.float({ min: 0, max: 1 });
@@ -180,7 +183,7 @@ export function generateSeedData(options: SeedOptions = {}): SeedData {
   // ── Customer and accounts ──
   const user: SeedUser = {
     id: faker.string.uuid(),
-    email: DEMO_USER_EMAIL,
+    email,
     name: "Layla Haddad",
     createdAt: addMonths(start, -30),
   };

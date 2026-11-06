@@ -1,10 +1,11 @@
 import "server-only";
 
+import { unstable_rethrow } from "next/navigation";
 import { NextResponse } from "next/server";
 import type { z } from "zod";
 
 import type { ApiError } from "@/lib/api/types";
-import { getCurrentUserId } from "@/server/current-user";
+import { getSessionUserId } from "@/server/auth";
 
 const NO_STORE = { "Cache-Control": "private, no-store" };
 
@@ -30,13 +31,23 @@ export function invalidQuery(error: z.ZodError) {
   );
 }
 
-/** Resolves the user and turns unexpected failures into a JSON 500 instead of an HTML page. */
+export function unauthorized() {
+  return errorResponse(401, "unauthorized", "Sign in to use this API.");
+}
+
+/**
+ * Resolves the signed-in user and turns unexpected failures into a JSON 500 instead of an HTML
+ * page. The proxy already rejects anonymous API calls; this check is the second line of defence,
+ * so a matcher change can never expose data.
+ */
 export async function withUser(handler: (userId: string) => Promise<Response>) {
   try {
-    const userId = await getCurrentUserId();
-    if (!userId) return errorResponse(401, "unauthorized", "No user for this request.");
+    const userId = await getSessionUserId();
+    if (!userId) return unauthorized();
     return await handler(userId);
   } catch (error) {
+    // Let Next's own control-flow signals through (prerender bail-outs, redirects, notFound).
+    unstable_rethrow(error);
     console.error(error);
     return errorResponse(500, "internal_error", "Something went wrong. Please try again.");
   }

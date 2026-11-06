@@ -31,9 +31,10 @@ async function main() {
   const seed = Number(argValue("--seed") ?? DEFAULT_SEED_OPTIONS.seed);
 
   const started = Date.now();
-  const data = generateSeedData({ seed, endDate });
+  const email = process.env.DEMO_USER_EMAIL || DEFAULT_SEED_OPTIONS.email;
+  const data = generateSeedData({ seed, endDate, email });
   console.log(
-    `Generated ${data.transactions.length} transactions (seed ${seed}, ending ${endDate}).`,
+    `Generated ${data.transactions.length} transactions (seed ${seed}, ending ${endDate}, user ${email}).`,
   );
 
   const db = createDb(env.DATABASE_URL, { max: 1 });
