@@ -76,3 +76,32 @@ Rules that go with it:
 - `@playwright/test` is pinned to an exact version so it always matches the installed browsers.
 - `npm run typecheck` runs `next typegen` first, so typed routes (`LayoutProps`, `PageProps`) are
   available without a full build.
+
+---
+
+## 002 — Data model: minor units, derived balances, language-neutral categories
+
+**Date:** 2026-11-06 · **Phase:** 1
+
+### Decision
+
+- Drizzle ORM on Neon Postgres (`drizzle-orm/neon-http`). Schema in `src/server/db/schema.ts`,
+  SQL migrations generated into `drizzle/`.
+- Money is stored as positive integer minor units (`bigint`, read as JS `number`) plus an explicit
+  `direction` (debit/credit) and an ISO 4217 `currency`. No floats, no signed amounts.
+- Account balances are derived (opening balance + posted transactions), never stored.
+- Categories store only a `slug`; English and Arabic labels live in the i18n message files.
+- Transfers between own accounts share a `transfer_group_id`; reversals point at the original via
+  `reversal_of_id`.
+- `pg_trgm` GIN index on `description` for substring search; btree indexes match the explorer's
+  sort and filter paths.
+- Env vars are validated with zod (`src/lib/env.ts`); the DB client imports `server-only`.
+
+### Alternatives considered
+
+- **`numeric` / decimal amounts.** Exact, but drivers return strings and every consumer has to
+  parse them. Integers are exact and cheap to aggregate; values stay below 2^53.
+- **Stored running balance.** Faster reads, but it can drift from the ledger and complicates the
+  seed. At ~12k rows the aggregate is cheap.
+- **Full-text search (`tsvector`).** Better for words in long text; trigram suits short merchant-style
+  descriptions and partial matches like "carr" → "Carrefour".
