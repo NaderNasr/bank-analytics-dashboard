@@ -186,8 +186,8 @@ database).
   KPIs come with the previous period of equal length for deltas.
 - **Lazy env and DB client** (`getServerEnv()`, `getDb()`): `next build` imports every route to
   collect config, so validating at import time made builds require a database.
-- `getCurrentUserId()` resolves the seeded demo user for now; Phase 2 swaps in the session
-  without touching the routes.
+- The user came from a fixed demo lookup in Phase 1; Phase 2 replaced it with the session
+  (see 005) without touching the routes.
 
 ### Alternatives considered
 
@@ -196,3 +196,47 @@ database).
   At this size offset scans are a few milliseconds; revisit beyond ~1M rows.
 - **Server Actions or tRPC instead of REST.** Less boilerplate inside Next, but the brief asks for
   REST, and plain HTTP endpoints are easy to demo with curl and to cache later.
+
+## 005 — Authentication: Auth.js credentials, JWT sessions, two layers of checks
+
+**Date:** 2026-11-06 · **Phase:** 2
+
+### Context
+
+The brief asks for a credentials sign-in with a single demo user whose credentials come from env
+and are shown on the sign-in page, with the dashboard and API protected.
+
+### Decision
+
+- **Auth.js v5 (`next-auth@5` beta) with one Credentials provider** (`src/server/auth/`). The
+  config is built lazily, like the env and DB client, so `next build` needs no secrets.
+- **Stateless JWT sessions** in Auth.js's encrypted, HttpOnly, SameSite=Lax cookie, 8-hour
+  lifetime. There is one demo user and no revocation requirement, so a session table would add a
+  query to every request for nothing.
+- **Credentials:** `DEMO_USER_EMAIL` (defaults to `demo@bank-analytics.dev`) and
+  `DEMO_USER_PASSWORD` in env, validated with zod alongside `AUTH_SECRET` (`parseAuthEnv`, kept
+  separate from the database env so the seed and migrations don't need auth secrets). The seed
+  reads the same email. The check hashes both sides and uses `timingSafeEqual`, and always
+  compares email and password so timing does not reveal which was wrong. After a match the user
+  is looked up in the database; a missing row gets its own error telling you to run the seed.
+- **Two layers of protection.** `src/proxy.ts` (Next 16's renamed middleware) redirects anonymous
+  page requests to `/sign-in?callbackUrl=…` and answers anonymous `/api/*` calls with a JSON 401.
+  Route handlers then check the session again in `withUser`, and pages check it in the component
+  that reads it, as the Next docs recommend, so a matcher change can never expose data.
+- **Open-redirect guard.** `safeCallbackUrl` only accepts same-origin absolute paths (rejecting
+  `//host`, `/\host`, schemes and control characters) and is used by both the proxy and the
+  sign-in action.
+- **Sign-in is a Server Action** with `useActionState`: zod validation with per-field messages
+  linked via `aria-describedby`, distinct messages for wrong credentials, a missing seed and
+  server errors, and the email kept after a failed attempt. It works without JavaScript.
+- **Cache Components:** the session and the sign-in query are read inside `<Suspense>`, so both
+  pages keep a prerendered static shell.
+
+### Alternatives considered
+
+- **iron-session or a hand-rolled cookie.** Smaller, and what the Next docs use for examples, but
+  the brief names Auth.js, and it leaves room for adding an OAuth provider later.
+- **Database sessions.** Instant revocation, at the cost of a lookup per request. Not needed for a
+  single public demo account.
+- **Rate limiting sign-in.** The demo password is public, so throttling protects nothing here. A
+  real deployment would add it (for example Upstash Ratelimit on the action).
