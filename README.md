@@ -4,7 +4,7 @@ A retail-banking analytics app for a simulated Jordanian customer: an overview d
 charts, an explorer for 11,800+ transactions, and live market prices over WebSockets. English and
 Arabic (right-to-left), light and dark, keyboard- and screen-reader-accessible.
 
-**Live demo:** _coming soon_ · sign in with the demo account shown on the sign-in page.
+**Live demo:** [analytics-dashboard-nader.netlify.app](https://analytics-dashboard-nader.netlify.app) · sign in with the demo account shown on the sign-in page.
 
 ![Overview dashboard](docs/screenshots/overview.png)
 
@@ -17,6 +17,9 @@ Arabic (right-to-left), light and dark, keyboard- and screen-reader-accessible.
   subscriptions, café coffee, food delivery, ride-hailing, avoidable fees, weekend spending),
   each with its evidence, an estimated monthly and yearly saving, and a link that opens the
   explorer filtered to the transactions behind it.
+
+![Ways to save](docs/screenshots/ways-to-save.png)
+
 - **Transactions explorer.** Server-side search, filters and sorting over the full history,
   rendered with a virtualised table (about 25 DOM rows for 11,847 transactions) and loaded 100
   rows at a time as you scroll. Every filter lives in the URL, so views can be shared and survive
@@ -49,7 +52,7 @@ Arabic (right-to-left), light and dark, keyboard- and screen-reader-accessible.
 | Real-time   | WebSockets (Coinbase public feed) with a custom reconnecting hook             |
 | Auth        | Auth.js (credentials, JWT sessions)                                           |
 | i18n        | next-intl, English and Arabic (RTL)                                           |
-| Testing     | Vitest + Testing Library (200 tests), Playwright (35 tests, incl. axe audits) |
+| Testing     | Vitest + Testing Library (212 tests), Playwright (36 tests, incl. axe audits) |
 | CI/CD       | GitHub Actions (typecheck, lint, format, unit, end-to-end), Netlify           |
 
 ## Architecture
