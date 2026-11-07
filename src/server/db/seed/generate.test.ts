@@ -88,13 +88,14 @@ describe("generateSeedData", () => {
     expect(weekend / weekday).toBeGreaterThan(1.4);
   });
 
-  it("includes occasional failed, reversed and pending transactions", () => {
+  it("includes occasional failed and reversed transactions, and nothing left pending", () => {
     const share = (status: string) => txns.filter((t) => t.status === status).length / txns.length;
     expect(share("failed")).toBeGreaterThan(0.002);
     expect(share("failed")).toBeLessThan(0.03);
     expect(share("reversed")).toBeGreaterThan(0.001);
     expect(share("reversed")).toBeLessThan(0.01);
-    expect(share("pending")).toBeGreaterThan(0);
+    // The history ends days in the past, so every card payment has settled.
+    expect(share("pending")).toBe(0);
     expect(txns.filter((t) => t.status === "failed").every((t) => t.postedAt === null)).toBe(true);
   });
 

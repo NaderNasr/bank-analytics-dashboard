@@ -116,7 +116,6 @@ const CARD_ANNUAL_FEE_JOD = 25;
 const LOW_BALANCE_JOD = 400;
 const CURRENT_ACCOUNT_BUFFER_JOD = 4_200;
 const TOP_UP_JOD = 1_000;
-const PENDING_WINDOW_DAYS = 2;
 
 const jod = (major: number) => toMinor(major, CURRENCY);
 
@@ -183,7 +182,6 @@ export function generateSeedData(options: SeedOptions = {}): SeedData {
 
   const end = parseDay(endDate);
   const start = addMonths(end, -months);
-  const pendingFrom = end.getTime() - PENDING_WINDOW_DAYS * DAY_MS;
 
   // ── Customer and accounts ──
   const user: SeedUser = {
@@ -298,7 +296,6 @@ export function generateSeedData(options: SeedOptions = {}): SeedData {
     if (event.declinable) {
       const insufficient = event.direction === "debit" && amountMinor > available(event.account);
       if (insufficient || rand() < RANDOM_DECLINE_RATE) status = "failed";
-      else if (isCardLike && event.at.getTime() >= pendingFrom) status = "pending";
       else if (rand() < REVERSAL_RATE) status = "reversed";
     }
 
