@@ -1,0 +1,12 @@
+# Netlify deploys the Next.js app with its OpenNext-based adapter (@netlify/plugin-nextjs):
+# pages and route handlers become Netlify Functions, static assets go to the CDN.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

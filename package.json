@@ -24,7 +24,6 @@
     "@tanstack/react-query": "^5.107.1",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.26",
-    "@vercel/functions": "^3.11.0",
     "d3-array": "^3.2.5",
     "d3-axis": "^3.0.1",
     "d3-scale": "^4.0.3",
@@ -46,6 +45,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@faker-js/faker": "^10.6.0",
+    "@netlify/plugin-nextjs": "^5.16.6",
     "@playwright/test": "1.63.0",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "^10.4.2",
