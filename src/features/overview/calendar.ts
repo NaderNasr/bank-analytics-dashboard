@@ -1,8 +1,12 @@
-import { scaleQuantize } from "d3-scale";
+import { max, rollup, sum } from "d3-array";
+import { scaleQuantile } from "d3-scale";
+import { utcDay, utcMonth, utcSunday } from "d3-time";
 
 /**
- * Pure layout for the calendar heatmap: one column per week (Sunday first, the Jordanian working
- * week), one row per weekday, every day in the range present even when nothing was spent.
+ * Pure layout for the calendar heatmap, built on D3: `d3-time` intervals place every day in a
+ * Sunday-first week column (the Jordanian working week), `d3-array` aggregates, and a
+ * `d3-scale` quantile scale buckets spending into five levels, so each level holds a similar
+ * number of days and a few huge days (rent, travel) don't wash out everyday spending.
  */
 export interface CalendarCell {
   date: string;
@@ -10,64 +14,66 @@ export interface CalendarCell {
   weekday: number;
   amountMinor: number;
   count: number;
-  /** 0 = no spending, 1–5 = quantized intensity. */
+  /** 0 = no spending, 1–5 = quantile bucket. */
   level: number;
 }
 
 export interface CalendarLayout {
   cells: CalendarCell[];
   weeks: number;
-  /** First column index of each month, for the month labels. */
+  /** First week column of each month, for the month labels. */
   monthStarts: { month: string; week: number }[];
   maxMinor: number;
 }
 
-const DAY_MS = 86_400_000;
 export const HEAT_LEVELS = 5;
 
-function parse(day: string) {
-  return Date.parse(`${day}T00:00:00Z`);
-}
-
-function format(ms: number) {
-  return new Date(ms).toISOString().slice(0, 10);
-}
+const parse = (day: string) => new Date(`${day}T00:00:00Z`);
+const iso = (date: Date) => date.toISOString().slice(0, 10);
 
 export function buildCalendar(
   daily: { date: string; amountMinor: number; count: number }[],
   from: string,
   to: string,
 ): CalendarLayout {
-  const byDay = new Map(daily.map((d) => [d.date, d]));
   const start = parse(from);
-  const end = parse(to);
-  const firstWeekday = new Date(start).getUTCDay();
+  const days = utcDay.range(start, utcDay.offset(parse(to), 1));
 
-  const amounts = daily.filter((d) => d.date >= from && d.date <= to).map((d) => d.amountMinor);
-  const maxMinor = amounts.length ? Math.max(...amounts) : 0;
-  // Quantize on a square-root scale so a few very large days (rent, travel) don't wash out the rest.
-  const level = scaleQuantize<number>()
-    .domain([0, Math.sqrt(maxMinor || 1)])
+  const byDay = rollup(
+    daily.filter((d) => d.date >= from && d.date <= to),
+    (rows) => ({ amountMinor: sum(rows, (r) => r.amountMinor), count: sum(rows, (r) => r.count) }),
+    (d) => d.date,
+  );
+  const spent = [...byDay.values()].map((d) => d.amountMinor).filter((a) => a > 0);
+  const level = scaleQuantile<number>()
+    .domain(spent.length ? spent : [1])
     .range([1, 2, 3, 4, 5]);
 
-  const cells: CalendarCell[] = [];
-  const monthStarts: CalendarLayout["monthStarts"] = [];
-  for (let ms = start, i = 0; ms <= end; ms += DAY_MS, i++) {
-    const date = format(ms);
-    const offset = i + firstWeekday;
-    const week = Math.floor(offset / 7);
-    const entry = byDay.get(date);
+  const weekOf = (date: Date) => utcSunday.count(start, date);
+  const cells = days.map((date) => {
+    const key = iso(date);
+    const entry = byDay.get(key);
     const amountMinor = entry?.amountMinor ?? 0;
-    if (date.endsWith("-01") || i === 0) monthStarts.push({ month: date.slice(0, 7), week });
-    cells.push({
-      date,
-      week,
-      weekday: offset % 7,
+    return {
+      date: key,
+      week: weekOf(date),
+      weekday: date.getUTCDay(),
       amountMinor,
       count: entry?.count ?? 0,
-      level: amountMinor > 0 ? level(Math.sqrt(amountMinor)) : 0,
-    });
-  }
-  const last = cells.at(-1);
-  return { cells, weeks: last ? last.week + 1 : 0, monthStarts, maxMinor };
+      level: amountMinor > 0 ? level(amountMinor) : 0,
+    };
+  });
+
+  const firstMonth = utcMonth.floor(start);
+  const monthStarts = [
+    start,
+    ...utcMonth.range(utcMonth.offset(firstMonth, 1), utcDay.offset(parse(to), 1)),
+  ].map((date) => ({ month: iso(date).slice(0, 7), week: weekOf(date) }));
+
+  return {
+    cells,
+    weeks: (max(cells, (c) => c.week) ?? -1) + 1,
+    monthStarts,
+    maxMinor: max(spent) ?? 0,
+  };
 }

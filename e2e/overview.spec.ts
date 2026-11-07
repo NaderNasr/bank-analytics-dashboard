@@ -43,7 +43,8 @@ test("switching the period refetches a shorter range with a comparison", async (
     "true",
   );
   await expect(page.getByTestId("kpis")).toContainText("vs previous period");
-  expect(await page.getByTestId("heatmap").locator("rect").count()).toBeLessThan(100);
+  // D3 fades the old days out before removing them.
+  await expect.poll(() => page.getByTestId("heatmap").locator("rect").count()).toBeLessThan(100);
 });
 
 test("the Arabic overview mirrors the charts", async ({ page }) => {
