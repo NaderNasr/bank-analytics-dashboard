@@ -273,15 +273,15 @@ transaction mode) and `DATABASE_URL_UNPOOLED` (direct) into `.env.local`. Hostin
 
 The brief asks for a fintech look that signals loyalty and security, the Onest typeface, an app
 shell, English and Arabic with full right-to-left support, and logical CSS properties only. The
-visual direction was generated with the UI UX Pro Max skill and approved from a preview.
+visual direction was agreed from a static preview before any component was built.
 
 ### Decision
 
 - **Palette ("Banking / Traditional Finance").** Navy for security and trust (navigation rail,
   primary actions), gold for loyalty and reward, used only as an accent: the active nav marker,
-  the membership badge and short dividers. The skill's first suggestion for "fintech" was gold
-  with purple on dark glass, aimed at crypto; it contradicted the brief and the skill's own
-  "avoid AI purple" rule, so the Financial Dashboard style (data-dense, minimal) was used instead.
+  the membership badge and short dividers. A crypto-style dark-glass look with purple accents was
+  considered and rejected: it reads as speculative rather than trustworthy, so the style is a
+  data-dense, minimal financial dashboard instead.
 - **Accessibility as a token property.** Every text/background pair is at least 4.5:1 in both
   themes, and form-control borders and focus rings are at least 3:1. Decorative dividers
   (`--border`) are separate from control borders (`--border-strong`) so a subtle divider never
@@ -314,8 +314,8 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
 - **next-themes.** Does the same with more surface; the inline script is 200 bytes.
 - **Locale from a cookie only (no URL prefix).** Cleaner URLs, but dynamic rendering for every
   page and links that can't be shared per language.
-- **IBM Plex Sans Arabic** for Arabic. Close in tone; Noto Sans Arabic was the skill's
-  highest-ranked Arabic sans and has a wider weight range.
+- **IBM Plex Sans Arabic** for Arabic. Close in tone; Noto Sans Arabic is more widely used,
+  reads better in dense tables and has a wider weight range.
 
 ## 008 — Overview dashboard: data fetching, charts and a sign-out race
 
@@ -331,7 +331,7 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
   months" is meaningful for seeded data. **Comparisons are only shown when the previous period
   is fully inside the history**; otherwise `previousKpis` is `null` and the tiles say there is
   nothing to compare, instead of "+106% income" against a half-empty year.
-- **Forms by job (dataviz method):** KPIs are stat tiles (not charts) with direction-aware deltas
+- **Chart form follows the job of the data:** KPIs are stat tiles (not charts) with direction-aware deltas
   (higher spending is "worse") carried by an arrow and screen-reader text, not colour alone;
   cash flow is grouped bars, two series on one axis, with a legend and an `sr-only` table;
   categories are sorted single-hue bars with values written beside them, folding the tail into

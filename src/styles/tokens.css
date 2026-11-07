@@ -2,7 +2,7 @@
  * Design tokens: the only place raw colours live. Components use the Tailwind names mapped in
  * globals.css (bg-surface, text-fg-muted, …), never hex values.
  *
- * Direction: "Financial Dashboard" (UI UX Pro Max): data-dense, minimal, light and dark.
+ * Direction: a data-dense, minimal financial dashboard, in light and dark.
  * Navy carries security and trust; gold carries loyalty and reward and is used for emphasis only
  * (active nav item, membership badge, dividers), never as a large fill.
  * Every text/background pair is at least 4.5:1 (WCAG AA); control borders and focus rings are at
@@ -53,7 +53,7 @@
   /* Focus */
   --ring: #2563eb;
 
-  /* Charts (validated with the dataviz palette checks: CVD separation, lightness, 3:1 contrast).
+  /* Charts (checked for colour-blind separation, lightness band and 3:1 contrast).
      Series 1 = income (blue), series 2 = spending (gold). Heat = one-hue sequential ramp. */
   --chart-1: #2a78d6;
   --chart-2: #c98500;
