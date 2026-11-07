@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseAuthEnv, parseServerEnv } from "./env";
+import { migrationDatabaseUrl, parseAuthEnv, parseServerEnv } from "./env";
 
 describe("parseServerEnv", () => {
   it("accepts a Postgres URL and defaults NODE_ENV", () => {
@@ -47,5 +47,20 @@ describe("parseAuthEnv", () => {
         DEMO_USER_PASSWORD: "correct-horse",
       }),
     ).toThrow(/DEMO_USER_EMAIL/);
+  });
+});
+
+describe("migrationDatabaseUrl", () => {
+  const pooled = "postgres://u:p@ep-x-pooler.eu-central-1.aws.neon.tech/db?sslmode=verify-full";
+  const direct = "postgres://u:p@ep-x.eu-central-1.aws.neon.tech/db?sslmode=verify-full";
+
+  it("prefers Neon's direct URL", () => {
+    const env = parseServerEnv({ DATABASE_URL: pooled, DATABASE_URL_UNPOOLED: direct });
+    expect(migrationDatabaseUrl(env)).toBe(direct);
+  });
+
+  it("falls back to DATABASE_URL, treating an empty value as unset", () => {
+    const env = parseServerEnv({ DATABASE_URL: pooled, DATABASE_URL_UNPOOLED: "" });
+    expect(migrationDatabaseUrl(env)).toBe(pooled);
   });
 });

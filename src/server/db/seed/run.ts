@@ -4,13 +4,13 @@
  *   npm run db:seed                      # default seed and end date
  *   npm run db:seed -- --end 2027-01-01  # shift the 18-month window
  *
- * Destructive: truncates every table first. Reads DATABASE_URL from .env.local or the
- * environment.
+ * Destructive: truncates every table first. Reads DATABASE_URL_UNPOOLED (Neon's direct URL) or
+ * DATABASE_URL from .env.local or the environment.
  */
 import { config } from "dotenv";
 import { sql } from "drizzle-orm";
 
-import { parseServerEnv } from "@/lib/env";
+import { migrationDatabaseUrl, parseServerEnv } from "@/lib/env";
 
 import { createDb } from "../client";
 import { accounts, categories, merchants, transactions, users } from "../schema";
@@ -37,7 +37,7 @@ async function main() {
     `Generated ${data.transactions.length} transactions (seed ${seed}, ending ${endDate}, user ${email}).`,
   );
 
-  const db = createDb(env.DATABASE_URL, { max: 1 });
+  const db = createDb(migrationDatabaseUrl(env), { max: 1 });
   try {
     await db.transaction(async (tx) => {
       await tx.execute(
