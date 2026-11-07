@@ -107,6 +107,8 @@ export interface SummaryResponse {
   cashFlow: { month: string; incomeMinor: number; spendingMinor: number }[];
   /** Gross expense debits by category, largest first. */
   spendingByCategory: { slug: string; amountMinor: number; count: number; share: number }[];
+  /** End-of-day total balance across the accounts in scope, one entry per day, oldest first. */
+  balanceHistory: { date: string; totalMinor: number }[];
   /** One entry per day with spending, oldest first (for the calendar heatmap). */
   dailySpending: { date: string; amountMinor: number; count: number }[];
   topMerchants: { id: string; name: string; amountMinor: number; count: number }[];

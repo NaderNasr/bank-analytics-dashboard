@@ -9,7 +9,8 @@ import { addDays, daysInRange, localDay, localDayStart, monthsInRange } from "@/
 import type { Db } from "@/server/db/client";
 import { accounts, categories, merchants, transactions } from "@/server/db/schema";
 
-import { listAccounts } from "./accounts";
+import { listAccounts, postedSigned } from "./accounts";
+import { balanceHistory } from "./balance-history";
 import { resolveSummaryRange } from "./summary-range";
 
 // A literal, not a bind parameter: GROUP BY must see the same expression as SELECT. Constant, so safe.
@@ -102,7 +103,7 @@ export async function getSummary(
   const month = sql<string>`to_char(${transactions.occurredAt} AT TIME ZONE ${TZ}, 'YYYY-MM')`;
   const day = sql<string>`to_char(${transactions.occurredAt} AT TIME ZONE ${TZ}, 'YYYY-MM-DD')`;
 
-  const [allAccounts, current, previous, monthly, byCategory, daily, topMerchants] =
+  const [allAccounts, current, previous, monthly, byCategory, daily, topMerchants, dailyNet] =
     await Promise.all([
       listAccounts(db, userId),
       kpis(db, userId, range.from, range.to, query.account),
@@ -158,6 +159,20 @@ export async function getSummary(
         .groupBy(merchants.id)
         .orderBy(desc(sql`3`))
         .limit(5),
+      // Net balance movement per day from the start of the range onwards (including after it),
+      // to rebuild end-of-day balances backwards from today's total.
+      db
+        .select({ date: day, net: money(sql`sum(${postedSigned})`) })
+        .from(transactions)
+        .innerJoin(accounts, eq(accounts.id, transactions.accountId))
+        .where(
+          and(
+            eq(accounts.userId, userId),
+            gte(transactions.occurredAt, localDayStart(range.from)),
+            query.account?.length ? inArray(transactions.accountId, query.account) : undefined,
+          ),
+        )
+        .groupBy(day),
     ]);
 
   const monthlyByKey = new Map(monthly.map((m) => [m.month, m]));
@@ -166,15 +181,23 @@ export async function getSummary(
     ? allAccounts.filter((a) => query.account!.includes(a.id))
     : allAccounts;
 
+  const totalMinor = accountsInScope.reduce((sum, a) => sum + a.balanceMinor, 0);
+
   return {
     currency: APP_CURRENCY,
     range: { from: range.from, to: range.to },
     previousRange: { from: range.previousFrom, to: range.previousTo },
     balances: {
       // Card balances are negative (money owed), so this is net worth across the accounts.
-      totalMinor: accountsInScope.reduce((sum, a) => sum + a.balanceMinor, 0),
+      totalMinor,
       accounts: accountsInScope,
     },
+    balanceHistory: balanceHistory(
+      totalMinor,
+      dailyNet.map((d) => ({ date: d.date, netMinor: d.net })),
+      range.from,
+      range.to,
+    ),
     kpis: current,
     previousKpis: previous,
     cashFlow: monthsInRange(range.from, range.to).map((m) => {

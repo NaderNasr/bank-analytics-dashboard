@@ -28,6 +28,7 @@ function summary(previous: Kpis | null): SummaryResponse {
     previousKpis: previous,
     cashFlow: [],
     spendingByCategory: [],
+    balanceHistory: [],
     dailySpending: [],
     topMerchants: [],
   };

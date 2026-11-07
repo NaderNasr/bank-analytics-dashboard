@@ -107,7 +107,16 @@
       "title": "We couldn't load your dashboard.",
       "retry": "Try again"
     },
-    "loading": "Loading your dashboard…"
+    "loading": "Loading your dashboard…",
+    "balance": {
+      "title": "Balance over time",
+      "subtitle": "Total across your accounts at the end of each day",
+      "tooltip": "Balance",
+      "current": "Now {amount}",
+      "low": "Lowest {amount}",
+      "high": "Highest {amount}",
+      "tableCaption": "End-of-day balance by month"
+    }
   },
   "Transactions": {
     "title": "Transactions",

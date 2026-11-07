@@ -19,7 +19,15 @@ test("shows KPIs, the cash-flow chart, the heatmap, categories and merchants", a
   await expect(kpis).toContainText(/JOD\s[\d,]+\.\d{3}/);
 
   await expect(page.getByRole("heading", { name: "Cash flow" })).toBeVisible();
-  await expect(page.locator(".recharts-bar-rectangle").first()).toBeVisible();
+  // D3 draws two bars (income, spending) per month for 12 months.
+  await expect(page.getByTestId("cash-flow-chart").locator("rect.bar")).toHaveCount(24);
+
+  // Balance chart: hovering snaps a crosshair to a day and shows its balance.
+  const balance = page.getByTestId("balance-chart");
+  await expect(balance.locator("path.line")).toHaveAttribute("d", /^M/);
+  const box = (await balance.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.getByTestId("balance-tooltip")).toContainText(/JOD\s[\d,]+\.\d{3}/);
 
   // A full year of days, none missing.
   const cells = page.getByTestId("heatmap").locator("rect");
@@ -53,11 +61,11 @@ test("the Arabic overview mirrors the charts", async ({ page }) => {
   await expect(page.getByTestId("kpis")).toContainText("إجمالي الرصيد");
 
   // Months run right-to-left: November (the first month) sits to the right of October (the last).
-  // Recharts 3 draws tick labels in their own layer, outside the axis group.
   const label = (text: string) =>
     page
-      .locator(".recharts-cartesian-axis-tick-value")
+      .getByTestId("cash-flow-chart")
       .filter({ visible: true })
+      .locator(".x-axis text")
       .getByText(text, { exact: true });
   const first = await label("تشرين الثاني").boundingBox();
   const last = await label("تشرين الأول").boundingBox();

@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/routing";
 import { formatDay } from "@/lib/format";
 
 import { AccountsList } from "./accounts-list";
+import { BalanceChart } from "./balance-chart";
 import { CashFlowChart } from "./cash-flow-chart";
 import { CategoryBreakdown } from "./category-breakdown";
 import { KpiCards } from "./kpi-cards";
@@ -91,11 +92,12 @@ export function OverviewDashboard() {
         >
           <KpiCards data={data} />
           <div className="grid gap-6 xl:grid-cols-3">
-            <div className="xl:col-span-2">
-              <CashFlowChart data={data} />
+            <div className="min-w-0 xl:col-span-2">
+              <BalanceChart data={data} />
             </div>
             <AccountsList data={data} />
           </div>
+          <CashFlowChart data={data} />
           <SpendingHeatmap data={data} />
           <div className="grid gap-6 lg:grid-cols-2">
             <CategoryBreakdown data={data} />

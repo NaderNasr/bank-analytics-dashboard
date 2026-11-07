@@ -347,8 +347,17 @@ visual direction was agreed from a static preview before any component was built
   positions cells with `scaleBand` and draws them with a keyed `selection.join()`; switching
   between 3, 6 and 12 months transitions cells in, moves and fades them out (`d3-transition`,
   skipped under reduced motion). React owns only the container, legend and tooltip; fills are
-  theme tokens (`var(--heat-n)`), so light/dark switching needs no redraw. Recharts draws the
-  bar chart, where a declarative component library is the better fit.
+  theme tokens (`var(--heat-n)`), so light/dark switching needs no redraw.
+- **Every chart is D3** (Recharts was removed). Cash flow is grouped bars plus a dashed net line
+  on one value axis that includes zero, with `scaleBand` for months and series, `d3-axis` for the
+  axes and a keyed join, so bars grow and move when the period changes. Balance over time is an
+  area chart on a UTC time scale with monotone curves, month ticks from `d3-time`, a crosshair
+  that snaps to the nearest day with `bisector`, and a clip-path sweep on redraw. Charts measure
+  their container with `ResizeObserver` and redraw to fit; full-height hit bands make hover
+  targets bigger than the marks; each chart keeps an `sr-only` table of its values.
+- **`balanceHistory` on the summary API.** End-of-day totals are rebuilt backwards from today's
+  balance with the per-day net movement (a pure, tested function), so the chart and the balance
+  tile always agree.
 - **RTL charts.** SVG `text-anchor` follows the inherited direction, which pushed labels outside
   the plot in Arabic. Plots are drawn in LTR coordinates (`dir="ltr"` on the chart container) and
   mirrored explicitly: reversed x-axis, value axis on the right, heatmap weeks flowing right to

@@ -105,3 +105,19 @@
 .flash-down {
   animation: flash-down 500ms ease-out;
 }
+
+/* d3-axis output, styled with tokens. The domain line is hidden; ticks are text only. */
+.chart-axis {
+  color: var(--chart-axis);
+  font-size: 12px;
+}
+.chart-axis .domain {
+  display: none;
+}
+.chart-axis .tick line {
+  stroke: var(--chart-grid);
+}
+.chart-axis text {
+  fill: var(--chart-axis);
+  font-family: inherit;
+}
