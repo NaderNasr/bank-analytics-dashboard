@@ -116,6 +116,49 @@
       "low": "Lowest {amount}",
       "high": "Highest {amount}",
       "tableCaption": "End-of-day balance by month"
+    },
+    "savings": {
+      "title": "Ways to save",
+      "subtitle": "Suggestions from your own spending in this period. Estimates, not promises.",
+      "total": "You could save about {monthly} a month",
+      "totalYear": "That's about {yearly} a year.",
+      "perMonth": "Save ≈ {amount}/month",
+      "perYear": "≈ {amount} a year",
+      "seeTransactions": "See transactions",
+      "empty": "Nothing obvious to cut in this period. Nice work.",
+      "error": "We couldn't load the suggestions.",
+      "howTitle": "How these are estimated",
+      "how": "Half of café coffees made at home for about {homeCup} a cup; half of delivery orders cooked at home for about 40% of the price; one ride in three by bus ({busFare}); a weekend budget that halves the extra a weekend day costs; the cheaper of two similar services cancelled. Suggestions worth less than {min} a month are hidden.",
+      "items": {
+        "overlappingMusic": {
+          "title": "Two music services",
+          "body": "You pay for {services} ({monthlyTotal} a month together). Keep one and cancel {cheaper}."
+        },
+        "overlappingVideo": {
+          "title": "Two video streaming services",
+          "body": "You pay for {services} ({monthlyTotal} a month together). Keep one and cancel {cheaper}."
+        },
+        "coffee": {
+          "title": "Coffee shops",
+          "body": "About {visitsPerMonth} café coffees a month at {average} each ({monthly} a month). Making half of them at home, at about {homeCup} a cup, adds up."
+        },
+        "delivery": {
+          "title": "Food delivery",
+          "body": "About {ordersPerMonth} delivery orders a month ({monthly}). Cooking half of those meals instead costs roughly 40% as much."
+        },
+        "rides": {
+          "title": "Ride-hailing",
+          "body": "About {ridesPerMonth} Careem and Uber rides a month at {average} on average ({monthly}). Taking the bus ({busFare}) for one ride in three saves the difference."
+        },
+        "fees": {
+          "title": "Avoidable fees",
+          "body": "{foreignCount} foreign-currency fees ({foreign}) and {atmCount} other-bank ATM fees ({atm}). A card without foreign fees, and your own bank's ATMs, would avoid them."
+        },
+        "weekend": {
+          "title": "Weekend spending",
+          "body": "Fridays and Saturdays cost {weekendDaily} a day on shopping, outings and eating out, {percentMore}% more than a weekday ({weekdayDaily}). A weekend budget of {targetDaily} a day halves that gap."
+        }
+      }
     }
   },
   "Transactions": {

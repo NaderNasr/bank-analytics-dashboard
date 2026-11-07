@@ -69,3 +69,20 @@ test("the Arabic overview mirrors the charts", async ({ page }) => {
   expect(first && last).toBeTruthy();
   expect(first!.x).toBeGreaterThan(last!.x);
 });
+
+test("ways to save: suggestions with evidence that link to the transactions behind them", async ({
+  page,
+}) => {
+  const savings = page.getByTestId("savings");
+  await expect(savings).toContainText(/You could save about JOD\s[\d,]+ a month/);
+  const coffee = page.getByTestId("saving-coffee");
+  await expect(coffee).toContainText(/café coffees a month/);
+  await expect(coffee).toContainText(/Save ≈ JOD\s[\d,]+\/month/);
+
+  await coffee.getByRole("link", { name: "See transactions" }).click();
+  await expect(page).toHaveURL("/en/transactions?category=coffee");
+  await expect(page.getByLabel("Category")).toHaveValue("coffee");
+  await expect(page.getByTestId("tx-row").filter({ visible: true }).first()).toContainText(
+    "Coffee",
+  );
+});

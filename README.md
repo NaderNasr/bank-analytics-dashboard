@@ -13,6 +13,10 @@ Arabic (right-to-left), light and dark, keyboard- and screen-reader-accessible.
 - **Overview dashboard.** KPI tiles compared with the previous period, a balance-over-time area
   chart with a crosshair, monthly cash flow (income, spending and net), a calendar heatmap of
   daily spending, spending by category, top merchants and accounts. Every chart is D3.
+- **Ways to save.** Suggestions computed from the customer's own transactions (overlapping
+  subscriptions, café coffee, food delivery, ride-hailing, avoidable fees, weekend spending),
+  each with its evidence, an estimated monthly and yearly saving, and a link that opens the
+  explorer filtered to the transactions behind it.
 - **Transactions explorer.** Server-side search, filters and sorting over the full history,
   rendered with a virtualised table (about 25 DOM rows for 11,847 transactions) and loaded 100
   rows at a time as you scroll. Every filter lives in the URL, so views can be shared and survive

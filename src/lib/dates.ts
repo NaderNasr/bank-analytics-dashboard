@@ -56,3 +56,13 @@ export function monthsInRange(from: string, to: string): string[] {
   for (let m = startOfMonth(from); m <= to; m = addMonths(m, 1)) months.push(m.slice(0, 7));
   return months;
 }
+
+/** Fridays and Saturdays (the Jordanian weekend) between two local days, inclusive. */
+export function weekendDaysBetween(from: string, to: string): number {
+  let weekend = 0;
+  for (let i = 0; i < daysInRange(from, to); i++) {
+    const weekday = new Date(`${addDays(from, i)}T00:00:00Z`).getUTCDay();
+    if (weekday === 5 || weekday === 6) weekend++;
+  }
+  return weekend;
+}

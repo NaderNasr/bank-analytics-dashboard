@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { addDays, addMonths, daysInRange, localDay, localDayStart, monthsInRange } from "./dates";
+import {
+  addDays,
+  addMonths,
+  daysInRange,
+  localDay,
+  localDayStart,
+  monthsInRange,
+  weekendDaysBetween,
+} from "./dates";
 
 describe("dates (Amman, UTC+3)", () => {
   it("maps instants to local days across midnight", () => {
@@ -24,5 +32,14 @@ describe("dates (Amman, UTC+3)", () => {
       "2026-01",
       "2026-02",
     ]);
+  });
+});
+
+describe("weekendDaysBetween", () => {
+  it("counts Fridays and Saturdays inclusively", () => {
+    // 2026-02-01 is a Sunday; the month has four Fridays and four Saturdays.
+    expect(weekendDaysBetween("2026-02-01", "2026-02-28")).toBe(8);
+    expect(weekendDaysBetween("2026-02-06", "2026-02-06")).toBe(1); // a Friday
+    expect(weekendDaysBetween("2026-02-01", "2026-02-05")).toBe(0);
   });
 });

@@ -13,6 +13,7 @@ import { BalanceChart } from "./balance-chart";
 import { CashFlowChart } from "./cash-flow-chart";
 import { CategoryBreakdown } from "./category-breakdown";
 import { KpiCards } from "./kpi-cards";
+import { SavingsPanel } from "./savings-panel";
 import { SpendingHeatmap } from "./spending-heatmap";
 import { RANGE_OPTIONS, summaryQuery, type RangeMonths } from "./summary-query";
 import { TopMerchants } from "./top-merchants";
@@ -99,6 +100,7 @@ export function OverviewDashboard() {
           </div>
           <CashFlowChart data={data} />
           <SpendingHeatmap data={data} />
+          <SavingsPanel months={months} currency={data.currency} />
           <div className="grid gap-6 lg:grid-cols-2">
             <CategoryBreakdown data={data} />
             <TopMerchants data={data} />

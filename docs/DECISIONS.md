@@ -460,3 +460,27 @@ visual direction was agreed from a static preview before any component was built
   remaining advisories are moderate and in development tooling only (an old esbuild inside
   drizzle-kit, minimatch inside the ESLint packages); forcing their fixes would downgrade the
   tooling, so they are tracked rather than patched.
+
+## 012 — "Ways to save": rule-based, explainable savings suggestions
+
+**Date:** 2026-11-07
+
+### Decision
+
+- **Rules, not a model.** `buildSavingsReport` (`src/lib/insights.ts`) is a pure function over
+  spending statistics. Each suggestion is a transparent formula on the customer's own numbers,
+  returned with the evidence behind it, so the UI can say _why_ ("135 café coffees a month at
+  JOD 2.450") next to _how much_. Fully unit-tested, deterministic, and cheap to run per request.
+- **Conservative estimates.** Half of café coffees made at home (JOD 0.350 a cup); half of
+  delivery orders cooked at home at about 40% of the price; one ride in three by bus (JOD 0.500);
+  the cheaper of two services doing the same job cancelled; avoidable foreign-currency and
+  off-network ATM fees; a weekend budget that halves the premium a weekend day costs over a
+  weekday. Suggestions worth under JOD 2 a month are hidden. The assumptions are shown on the
+  page.
+- **No double counting.** The weekend rule covers only shopping, entertainment and eating out in
+  person; coffee, delivery and rides have their own rules, so the headline total never counts
+  the same money twice.
+- **Actionable.** Each suggestion links to the transactions explorer pre-filtered to its
+  category, reusing the URL state from 009.
+- **Separate endpoint** (`/api/insights`, same window parameters as `/api/summary`) so the
+  suggestions load and cache independently and the summary stays lean.

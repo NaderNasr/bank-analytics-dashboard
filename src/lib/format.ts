@@ -15,7 +15,7 @@ export function formatAmount(
   minor: number,
   currency: string,
   locale: Locale,
-  options: { compact?: boolean; signed?: boolean } = {},
+  options: { compact?: boolean; signed?: boolean; whole?: boolean } = {},
 ): string {
   return new Intl.NumberFormat(intlLocale(locale), {
     style: "currency",
@@ -23,6 +23,7 @@ export function formatAmount(
     currencyDisplay: locale === "ar" ? "symbol" : "code",
     ...(options.compact ? { notation: "compact", maximumFractionDigits: 1 } : {}),
     ...(options.signed ? { signDisplay: "exceptZero" } : {}),
+    ...(options.whole ? { minimumFractionDigits: 0, maximumFractionDigits: 0 } : {}),
   }).format(toMajor(minor, currency));
 }
 

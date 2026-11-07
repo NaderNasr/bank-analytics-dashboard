@@ -1,5 +1,7 @@
 /** Response shapes shared by the route handlers and the client. Money is always in minor units. */
 
+import type { SavingsReport } from "@/lib/insights";
+
 export const TRANSACTION_STATUSES = ["pending", "posted", "failed", "reversed"] as const;
 export const TRANSACTION_DIRECTIONS = ["debit", "credit"] as const;
 export const TRANSACTION_CHANNELS = [
@@ -112,4 +114,9 @@ export interface SummaryResponse {
   /** One entry per day with spending, oldest first (for the calendar heatmap). */
   dailySpending: { date: string; amountMinor: number; count: number }[];
   topMerchants: { id: string; name: string; amountMinor: number; count: number }[];
+}
+
+/** GET /api/insights: savings suggestions for the analysed window. */
+export interface InsightsResponse extends SavingsReport {
+  range: { from: string; to: string };
 }

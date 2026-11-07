@@ -73,7 +73,10 @@ async function kpis(
  * The local days of the user's first and latest transactions (today if there are none). Anchoring
  * the default range to the data (not the clock) keeps a seeded demo meaningful long after seeding.
  */
-async function activityBounds(db: Db, userId: string): Promise<{ first: string; latest: string }> {
+export async function activityBounds(
+  db: Db,
+  userId: string,
+): Promise<{ first: string; latest: string }> {
   const [row] = await db
     .select({
       first: sql<Date | null>`min(${transactions.occurredAt})`,
