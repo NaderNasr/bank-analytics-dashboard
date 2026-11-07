@@ -381,3 +381,33 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
   start with `= + - @` are prefixed with `'` to block spreadsheet formula injection.
 - **Pinned TanStack Table v8.** npm's `latest` is a v9 with a different API; v8 is the stable,
   documented one.
+
+## 010 — Live markets: Coinbase over a reusable WebSocket hook, simulated fallback
+
+**Date:** 2026-11-07 · **Phase:** 6
+
+### Decision
+
+- **Source: Coinbase Exchange's public `ticker` feed** (`wss://ws-feed.exchange.coinbase.com`),
+  free and keyless, for BTC, ETH, SOL and XRP. The browser connects directly; Vercel functions
+  can't hold long-lived sockets, and public market data needs no secret. Messages are untrusted
+  input and are validated (`parseTicker`), never cast.
+- **Gold, EUR/JOD, GBP/JOD and the ASE index are simulated** (live feeds for them need paid keys)
+  and labelled "Simulated" on every card. JOD equivalents use the official peg,
+  1 JOD = 1.41044 USD, stated on the page.
+- **`useWebSocket` (src/hooks)** is generic: status (`connecting` / `open` / `reconnecting` /
+  `paused` / `failed`), exponential backoff with full jitter, a retry budget after which it
+  reports `failed`, a `reconnect()` to start over, pausing while the tab is hidden, and a clean
+  close on unmount. Callbacks are read from refs so re-renders don't reconnect. Tested with a
+  fake socket and fake timers.
+- **Fallback.** If no live tick arrives for 8 seconds (feed down, blocked network, retries
+  exhausted), crypto switches to the simulated feed, the status pill says so, and a retry button
+  appears once the hook gives up. The page never goes blank.
+- **Rendering cost.** A busy feed sends many messages per second; ticks are buffered and applied
+  once a second through a pure reducer (`applyTicks`) that keeps a bounded 90-point history for
+  sparklines. Screen readers hear the selected price at most every 15 seconds via a polite live
+  region, not every tick; price direction is shown by arrow and sign as well as colour.
+- **Tests don't touch the network.** Playwright's `routeWebSocket` stands in for Coinbase, so the
+  live path, the subscribe message and the outage fallback are all tested deterministically.
+- **Arabic number display:** dollars show as `USD` (Arabic's `US$` reorders to `$US` in
+  right-to-left text); the dinar keeps its Arabic sign.

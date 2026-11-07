@@ -163,7 +163,48 @@
   },
   "Markets": {
     "title": "Markets",
-    "comingSoon": "Live market prices arrive in Phase 6."
+    "description": "Live crypto prices from Coinbase, with simulated gold, currencies and the Amman index.",
+    "status": {
+      "open": "Live",
+      "connecting": "Connecting…",
+      "reconnecting": "Reconnecting (attempt {attempt})…",
+      "paused": "Paused while this tab is hidden",
+      "failed": "Live feed unavailable",
+      "idle": "Offline",
+      "fallback": "Showing simulated prices",
+      "retry": "Try live again"
+    },
+    "source": {
+      "live": "Live",
+      "simulated": "Simulated"
+    },
+    "kinds": {
+      "crypto": "Crypto",
+      "metal": "Metal",
+      "fx": "Currency",
+      "index": "Index"
+    },
+    "names": {
+      "BTC": "Bitcoin",
+      "ETH": "Ethereum",
+      "SOL": "Solana",
+      "XRP": "XRP",
+      "XAU": "Gold (oz)",
+      "EURJOD": "Euro / Dinar",
+      "GBPJOD": "Pound / Dinar",
+      "ASE": "ASE General Index"
+    },
+    "change": "{change} today",
+    "jodEquivalent": "≈ {amount}",
+    "open": "Open",
+    "high": "High",
+    "low": "Low",
+    "updated": "Updated {time}",
+    "waiting": "Waiting for the first price…",
+    "select": "Show {name} details",
+    "announce": "{name} {price}",
+    "pegNote": "JOD equivalents use the official peg: 1 JOD = 1.41044 USD.",
+    "disclaimer": "Crypto prices stream from Coinbase's public feed. Gold, currencies and the ASE index are simulated for this demo. Not investment advice."
   },
   "NotFound": {
     "title": "Page not found",

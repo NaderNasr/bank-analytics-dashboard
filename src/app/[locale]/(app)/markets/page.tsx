@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { PageHeader } from "@/components/shell/page-header";
+import { MarketsBoard } from "@/features/markets/markets-board";
 import { isLocale } from "@/i18n/routing";
 
 export async function generateMetadata({
@@ -15,9 +15,9 @@ export async function generateMetadata({
   return { title: t("title") };
 }
 
+/** The board connects from the browser; the server only renders the shell. */
 export default async function MarketsPage({ params }: PageProps<"/[locale]/markets">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("Markets");
-  return <PageHeader title={t("title")} description={t("comingSoon")} />;
+  return <MarketsBoard />;
 }

@@ -87,3 +87,21 @@
 @utility tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Price flash on the markets board; disabled by the reduced-motion rule above. */
+@keyframes flash-up {
+  from {
+    background-color: color-mix(in srgb, var(--positive) 9%, transparent);
+  }
+}
+@keyframes flash-down {
+  from {
+    background-color: color-mix(in srgb, var(--negative) 9%, transparent);
+  }
+}
+.flash-up {
+  animation: flash-up 500ms ease-out;
+}
+.flash-down {
+  animation: flash-down 500ms ease-out;
+}
