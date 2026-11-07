@@ -127,7 +127,10 @@ export function FiltersBar({ filters, total, onChange, onClear }: FiltersBarProp
           onChange={(status) => onChange({ status: status as ExplorerFilters["status"] })}
           options={[
             { value: "", label: t("allStatuses") },
-            ...TRANSACTION_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
+            ...TRANSACTION_STATUSES.filter((s) => s !== "pending").map((s) => ({
+              value: s,
+              label: t(`statuses.${s}`),
+            })),
           ]}
         />
 
