@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// No eval-based fast path: the shared schemas also run in the browser, and the CSP forbids eval.
+z.config({ jitless: true });
+
 import { APP_CURRENCY } from "@/lib/constants";
 import { toMinor } from "@/lib/money";
 
