@@ -17,6 +17,11 @@ export function localDay(instant: Date): string {
 }
 
 /** The UTC instant at which a local day starts. */
+/** "YYYY-MM-DD HH:mm" in Amman time, for exports. */
+export function localDateTime(instant: Date): string {
+  return new Date(instant.getTime() + OFFSET_MS).toISOString().slice(0, 16).replace("T", " ");
+}
+
 export function localDayStart(day: string): Date {
   return new Date(toDate(day).getTime() - OFFSET_MS);
 }

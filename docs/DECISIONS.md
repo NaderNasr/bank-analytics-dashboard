@@ -354,3 +354,30 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
   fixed 8-hour lifetime from sign-in.
 - **The user menu calls `connection()`** before reading the session, so partial prefetches don't
   run Auth.js's crypto during a prerender.
+
+## 009 — Transactions explorer: URL state, server-side work, virtualised rows
+
+**Date:** 2026-11-07 · **Phase:** 5
+
+### Decision
+
+- **The URL is the state.** Search, dates, category, account, type, status and sort live in the
+  query string (`url-state.ts`), read leniently (an invalid value is dropped, not an error page)
+  and written canonically (defaults omitted, fixed key order), so equal views share one cache
+  entry and any view can be bookmarked or shared. Search updates the URL after a 300 ms pause.
+- **The server filters and sorts; the client only displays.** The explorer reuses
+  `/api/transactions` with the same zod contract, loading 100 rows per page with
+  `useInfiniteQuery` as the user scrolls (next page requested 20 rows before the end). The
+  previous result stays on screen, dimmed, while a new filter loads.
+- **TanStack Table in manual mode** for column definitions and sort state, **TanStack Virtual**
+  for rendering: only the rows in view (plus 10 overscan) exist in the DOM, about 25 of 11,850.
+  The grid keeps table semantics with ARIA (`role="table"`, `aria-rowcount` = total rows,
+  `aria-rowindex` per row, `aria-sort` on headers) because a virtualised `<table>` can't hold
+  absolutely positioned rows.
+- **CSV export is a server endpoint** (`/api/transactions/export`) taking the same filters and
+  streaming every matching row in batches of 2,000 (capped at 50,000), rather than building a
+  file from the rows the browser happens to have loaded. Amounts are signed major units so the
+  file sums correctly; dates are Amman local time; a UTF-8 BOM keeps Excel happy. Cells that
+  start with `= + - @` are prefixed with `'` to block spreadsheet formula injection.
+- **Pinned TanStack Table v8.** npm's `latest` is a v9 with a different API; v8 is the stable,
+  documented one.

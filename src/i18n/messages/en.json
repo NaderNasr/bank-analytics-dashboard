@@ -111,7 +111,55 @@
   },
   "Transactions": {
     "title": "Transactions",
-    "comingSoon": "The searchable, filterable transactions explorer arrives in Phase 5."
+    "description": "Search, filter and export your full history.",
+    "count": "{count, plural, one {# transaction} other {# transactions}}",
+    "search": "Search",
+    "searchPlaceholder": "Merchant, description or reference",
+    "from": "From",
+    "to": "To",
+    "category": "Category",
+    "account": "Account",
+    "status": "Status",
+    "direction": "Type",
+    "all": "All",
+    "allCategories": "All categories",
+    "allAccounts": "All accounts",
+    "allStatuses": "Any status",
+    "allDirections": "All types",
+    "moneyIn": "Money in",
+    "moneyOut": "Money out",
+    "clear": "Clear filters",
+    "export": "Export CSV",
+    "exportLabel": "Export {count} transactions as CSV",
+    "columns": {
+      "occurredAt": "Date",
+      "description": "Description",
+      "category": "Category",
+      "account": "Account",
+      "status": "Status",
+      "amount": "Amount"
+    },
+    "sortBy": "Sort by {column}",
+    "sortedAsc": "sorted ascending",
+    "sortedDesc": "sorted descending",
+    "statuses": {
+      "pending": "Pending",
+      "posted": "Posted",
+      "failed": "Failed",
+      "reversed": "Reversed"
+    },
+    "empty": {
+      "title": "No transactions match",
+      "body": "Try a different search or clear the filters."
+    },
+    "error": {
+      "title": "We couldn't load transactions.",
+      "retry": "Try again"
+    },
+    "loadingMore": "Loading more…",
+    "loading": "Loading transactions…",
+    "endOfList": "That's everything.",
+    "tableLabel": "Transactions"
   },
   "Markets": {
     "title": "Markets",

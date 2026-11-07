@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
 
-import { PageHeader } from "@/components/shell/page-header";
+import { TransactionsExplorer } from "@/features/transactions/transactions-explorer";
 import { isLocale } from "@/i18n/routing";
 
 export async function generateMetadata({
@@ -15,9 +16,13 @@ export async function generateMetadata({
   return { title: t("title") };
 }
 
+/** The explorer reads its filters from the URL, so it renders behind a Suspense boundary. */
 export default async function TransactionsPage({ params }: PageProps<"/[locale]/transactions">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("Transactions");
-  return <PageHeader title={t("title")} description={t("comingSoon")} />;
+  return (
+    <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-surface-muted" />}>
+      <TransactionsExplorer />
+    </Suspense>
+  );
 }
