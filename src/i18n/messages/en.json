@@ -139,7 +139,7 @@
     "moneyOut": "Money out",
     "clear": "Clear filters",
     "export": "Export CSV",
-    "exportLabel": "Export {count} transactions as CSV",
+    "exportLabel": "Export CSV ({count, plural, one {# transaction} other {# transactions}})",
     "columns": {
       "occurredAt": "Date",
       "description": "Description",

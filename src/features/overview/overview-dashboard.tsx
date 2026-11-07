@@ -52,7 +52,7 @@ export function OverviewDashboard() {
               type="button"
               onClick={() => setMonths(option)}
               aria-pressed={months === option}
-              aria-label={t("range.monthsLong", { count: option })}
+              title={t("range.monthsLong", { count: option })}
               className={`h-9 min-w-12 rounded-[5px] px-3 text-sm font-medium tabular transition-colors duration-150 ${
                 months === option
                   ? "bg-primary text-on-primary"

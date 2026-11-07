@@ -43,13 +43,10 @@ test("switching the period refetches a shorter range with a comparison", async (
   await expect(page.getByTestId("kpis")).toContainText("No previous period to compare");
 
   const request = page.waitForRequest((r) => r.url().includes("/api/summary?months=3"));
-  await page.getByRole("button", { name: "Last 3 months" }).click();
+  await page.getByRole("button", { name: "3M" }).click();
   await request;
 
-  await expect(page.getByRole("button", { name: "Last 3 months" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  await expect(page.getByRole("button", { name: "3M" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("kpis")).toContainText("vs previous period");
   // D3 fades the old days out before removing them.
   await expect.poll(() => page.getByTestId("heatmap").locator("rect").count()).toBeLessThan(100);

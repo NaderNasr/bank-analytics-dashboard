@@ -26,12 +26,12 @@ export function LanguageSwitch() {
       type="button"
       onClick={switchLocale}
       disabled={pending}
-      lang={other}
-      aria-label={t("switchToLabel")}
       className="inline-flex h-11 items-center gap-2 rounded-md px-2.5 text-sm font-medium text-fg-muted transition-colors duration-150 hover:bg-surface-muted hover:text-fg disabled:opacity-60 sm:h-9"
     >
       <Languages aria-hidden className="size-[18px]" />
-      {t("switchTo")}
+      {/* The accessible name includes the visible text (WCAG 2.5.3), in its own language. */}
+      <span className="sr-only">{t("switchToLabel")}: </span>
+      <span lang={other}>{t("switchTo")}</span>
     </button>
   );
 }

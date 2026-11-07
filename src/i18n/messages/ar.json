@@ -139,7 +139,7 @@
     "moneyOut": "صادر",
     "clear": "مسح عوامل التصفية",
     "export": "تصدير CSV",
-    "exportLabel": "تصدير {count} معاملة بصيغة CSV",
+    "exportLabel": "تصدير CSV ({count, plural, zero {لا معاملات} one {معاملة واحدة} two {معاملتان} few {# معاملات} many {# معاملة} other {# معاملة}})",
     "columns": {
       "occurredAt": "التاريخ",
       "description": "الوصف",

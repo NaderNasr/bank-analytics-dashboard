@@ -79,7 +79,7 @@ test("exports the filtered view as CSV", async ({ page }) => {
   const count = Number((await page.getByTestId("result-count").textContent())!.replace(/\D/g, ""));
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("link", { name: /Export .* as CSV/ }).click();
+  await page.getByRole("link", { name: /^Export CSV \(/ }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^transactions-\d{4}-\d{2}-\d{2}\.csv$/);
 
