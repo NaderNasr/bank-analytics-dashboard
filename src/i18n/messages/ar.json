@@ -111,7 +111,55 @@
   },
   "Transactions": {
     "title": "المعاملات",
-    "comingSoon": "مستكشف المعاملات مع البحث والتصفية في المرحلة الخامسة."
+    "description": "ابحث في سجلك الكامل وصفّه وصدّره.",
+    "count": "{count, plural, zero {لا معاملات} one {معاملة واحدة} two {معاملتان} few {# معاملات} many {# معاملة} other {# معاملة}}",
+    "search": "بحث",
+    "searchPlaceholder": "التاجر أو الوصف أو المرجع",
+    "from": "من",
+    "to": "إلى",
+    "category": "الفئة",
+    "account": "الحساب",
+    "status": "الحالة",
+    "direction": "النوع",
+    "all": "الكل",
+    "allCategories": "كل الفئات",
+    "allAccounts": "كل الحسابات",
+    "allStatuses": "أي حالة",
+    "allDirections": "كل الأنواع",
+    "moneyIn": "وارد",
+    "moneyOut": "صادر",
+    "clear": "مسح عوامل التصفية",
+    "export": "تصدير CSV",
+    "exportLabel": "تصدير {count} معاملة بصيغة CSV",
+    "columns": {
+      "occurredAt": "التاريخ",
+      "description": "الوصف",
+      "category": "الفئة",
+      "account": "الحساب",
+      "status": "الحالة",
+      "amount": "المبلغ"
+    },
+    "sortBy": "الترتيب حسب {column}",
+    "sortedAsc": "مرتب تصاعديًا",
+    "sortedDesc": "مرتب تنازليًا",
+    "statuses": {
+      "pending": "قيد الانتظار",
+      "posted": "مُرحّلة",
+      "failed": "فاشلة",
+      "reversed": "مُعكوسة"
+    },
+    "empty": {
+      "title": "لا توجد معاملات مطابقة",
+      "body": "جرّب بحثًا مختلفًا أو امسح عوامل التصفية."
+    },
+    "error": {
+      "title": "تعذّر تحميل المعاملات.",
+      "retry": "حاول مرة أخرى"
+    },
+    "loadingMore": "جارٍ تحميل المزيد…",
+    "loading": "جارٍ تحميل المعاملات…",
+    "endOfList": "هذه كل المعاملات.",
+    "tableLabel": "المعاملات"
   },
   "Markets": {
     "title": "الأسواق",

@@ -99,6 +99,31 @@ export async function listTransactions(
   };
 }
 
+/** Upper bound for one export; the demo customer has about 12,000 rows. */
+export const EXPORT_MAX_ROWS = 50_000;
+const EXPORT_BATCH = 2_000;
+
+/**
+ * Every row matching the filters, in the requested order, fetched in batches so a large export
+ * streams instead of being held in memory. Pagination params are ignored.
+ */
+export async function* exportTransactions(
+  db: Db,
+  userId: string,
+  query: TransactionsQuery,
+): AsyncGenerator<TransactionListItem[]> {
+  const where = and(eq(accounts.userId, userId), buildTransactionWhere(query));
+  for (let offset = 0; offset < EXPORT_MAX_ROWS; offset += EXPORT_BATCH) {
+    const rows = await baseSelect(db)
+      .where(where)
+      .orderBy(...buildTransactionOrderBy(query))
+      .limit(Math.min(EXPORT_BATCH, EXPORT_MAX_ROWS - offset))
+      .offset(offset);
+    if (rows.length > 0) yield rows.map(toListItem);
+    if (rows.length < EXPORT_BATCH) return;
+  }
+}
+
 export async function getTransaction(
   db: Db,
   userId: string,

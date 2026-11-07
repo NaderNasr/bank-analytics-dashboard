@@ -36,12 +36,13 @@ All endpoints return JSON and need a signed-in session (sign in through the brow
 one they return `401`. Money is in minor units (`amountMinor`; JOD has 3 decimals) and dates are
 local days in Amman time.
 
-| Endpoint                     | Purpose                                                                        |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| `GET /api/accounts`          | Accounts with derived balance and available funds                              |
-| `GET /api/transactions`      | Paginated, sortable, filterable list (see `src/lib/api/transactions-query.ts`) |
-| `GET /api/transactions/{id}` | One transaction, with linked refunds or the other leg of a transfer            |
-| `GET /api/summary`           | KPIs vs previous period, cash flow, categories, daily spending (`?months=`)    |
+| Endpoint                       | Purpose                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `GET /api/accounts`            | Accounts with derived balance and available funds                              |
+| `GET /api/transactions`        | Paginated, sortable, filterable list (see `src/lib/api/transactions-query.ts`) |
+| `GET /api/transactions/export` | CSV of every row matching the same filters (streamed)                          |
+| `GET /api/transactions/{id}`   | One transaction, with linked refunds or the other leg of a transfer            |
+| `GET /api/summary`             | KPIs vs previous period, cash flow, categories, daily spending (`?months=`)    |
 
 Example: `/api/transactions?from=2026-01-01&to=2026-03-31&category=dining,coffee&minAmount=5&q=talabat&sort=amount&order=desc`
 
