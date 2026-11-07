@@ -10,19 +10,19 @@ describe("signInSchema", () => {
     expect(parsed.email).toBe("demo@bank-analytics.dev");
   });
 
-  it("reports missing fields with friendly messages", () => {
+  it("reports missing fields as translation keys", () => {
     const result = signInSchema.safeParse({ email: "", password: "" });
     expect(result.success).toBe(false);
     const messages = result.error?.issues.map((i) => [i.path[0], i.message]);
     expect(messages).toEqual([
-      ["email", "Enter your email address."],
-      ["password", "Enter your password."],
+      ["email", "emailRequired"],
+      ["password", "passwordRequired"],
     ]);
   });
 
   it("rejects a malformed email", () => {
     const result = signInSchema.safeParse({ email: "demo", password: "x" });
-    expect(result.error?.issues[0]?.message).toBe("Enter a valid email address.");
+    expect(result.error?.issues[0]?.message).toBe("emailInvalid");
   });
 
   it("rejects non-string values from a tampered form", () => {

@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { SIGN_IN_PATH } from "@/lib/auth/callback-url";
+import { signInPath } from "@/lib/auth/callback-url";
 import { getDb, users } from "@/server/db";
 import { getAuthEnv } from "@/server/env";
 
@@ -29,7 +29,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     // Vercel and `next start` behind a proxy: trust the forwarded host header.
     trustHost: true,
     session: { strategy: "jwt", maxAge: SESSION_MAX_AGE_SECONDS },
-    pages: { signIn: SIGN_IN_PATH, error: SIGN_IN_PATH },
+    // Only used when Auth.js redirects on its own; the app sends users to the localised page.
+    pages: { signIn: signInPath(), error: signInPath() },
     providers: [
       Credentials({
         credentials: { email: { type: "email" }, password: { type: "password" } },

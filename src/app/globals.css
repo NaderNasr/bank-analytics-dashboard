@@ -1,25 +1,86 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-/* Placeholder colors. Replaced by src/styles/tokens.css in Phase 3. */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Theme switching uses data-theme on <html> (see tokens.css), not Tailwind's class strategy. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-gold: var(--gold);
+  --color-gold-accent: var(--gold-accent);
+  --color-gold-soft: var(--gold-soft);
+  --color-on-gold-soft: var(--on-gold-soft);
+  --color-nav: var(--nav);
+  --color-on-nav: var(--on-nav);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-hover: var(--nav-hover);
+  --color-nav-edge: var(--nav-edge);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-negative-soft: var(--negative-soft);
+  --color-on-negative-soft: var(--on-negative-soft);
+  --color-ring: var(--ring);
+  --color-scrim: var(--scrim);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-overlay: var(--shadow-overlay);
+
+  /* Onest has no Arabic glyphs, so Arabic text falls through to Noto Sans Arabic per character
+     while Latin text and digits stay in Onest, in both languages. */
+  --font-sans: var(--font-onest), var(--font-noto-arabic), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11";
+  }
+
+  /* Visible focus for keyboard users everywhere; never removed, only restyled. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, sans-serif;
+@utility tabular {
+  font-variant-numeric: tabular-nums;
 }

@@ -2,11 +2,17 @@
 
 import { AuthError } from "next-auth";
 
-import { safeCallbackUrl, SIGN_IN_PATH } from "@/lib/auth/callback-url";
+import { DEFAULT_LOCALE, isLocale } from "@/i18n/routing";
+import { homePath, safeCallbackUrl, signInPath } from "@/lib/auth/callback-url";
 import { signIn, signOut } from "@/server/auth";
-import { signInSchema } from "@/server/auth/credentials";
+import { signInSchema, type SignInFieldErrorKey } from "@/server/auth/credentials";
 
 import type { SignInState } from "./sign-in-state";
+
+function localeFrom(formData: FormData) {
+  const value = formData.get("locale");
+  return isLocale(value) ? value : DEFAULT_LOCALE;
+}
 
 export async function signInAction(
   _previous: SignInState,
@@ -21,7 +27,7 @@ export async function signInAction(
     for (const issue of parsed.error.issues) {
       const field = issue.path[0];
       if ((field === "email" || field === "password") && !fieldErrors[field]) {
-        fieldErrors[field] = issue.message;
+        fieldErrors[field] = issue.message as SignInFieldErrorKey;
       }
     }
     return { error: "invalid_input", fieldErrors, email: echoedEmail };
@@ -31,7 +37,7 @@ export async function signInAction(
     // On success this throws Next's redirect signal, which must propagate (see below).
     await signIn("credentials", {
       ...parsed.data,
-      redirectTo: safeCallbackUrl(formData.get("callbackUrl")),
+      redirectTo: safeCallbackUrl(formData.get("callbackUrl"), homePath(localeFrom(formData))),
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -50,6 +56,6 @@ export async function signInAction(
   return { error: null };
 }
 
-export async function signOutAction() {
-  await signOut({ redirectTo: SIGN_IN_PATH });
+export async function signOutAction(formData: FormData) {
+  await signOut({ redirectTo: signInPath(localeFrom(formData)) });
 }

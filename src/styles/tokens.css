@@ -1,0 +1,128 @@
+/*
+ * Design tokens: the only place raw colours live. Components use the Tailwind names mapped in
+ * globals.css (bg-surface, text-fg-muted, …), never hex values.
+ *
+ * Direction: "Financial Dashboard" (UI UX Pro Max): data-dense, minimal, light and dark.
+ * Navy carries security and trust; gold carries loyalty and reward and is used for emphasis only
+ * (active nav item, membership badge, dividers), never as a large fill.
+ * Every text/background pair is at least 4.5:1 (WCAG AA); control borders and focus rings are at
+ * least 3:1 against their surface. See docs/DECISIONS.md 007.
+ *
+ * Theme: light by default, dark when the OS prefers it, unless the user picked one explicitly
+ * (data-theme on <html>, set before paint by the theme script).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-muted: #eef2f7;
+  --border: #dde3ec; /* decorative dividers only */
+  --border-strong: #8592a6; /* form controls: 3:1 on surface */
+
+  /* Text */
+  --fg: #0b1220;
+  --fg-muted: #4b5869;
+
+  /* Brand */
+  --primary: #1e3a8a;
+  --on-primary: #ffffff;
+  --primary-hover: #1a3278;
+  --gold: #946200; /* gold as text on light surfaces */
+  --gold-accent: #e3b341; /* gold as a mark: bars, icons, active indicator */
+  --gold-soft: #fbf3dc;
+  --on-gold-soft: #6b4700;
+
+  /* Navigation (navy in both themes) */
+  --nav: #0b1b3a;
+  --on-nav: #e6ecf5;
+  --nav-muted: #9fb0cc;
+  --nav-hover: rgb(255 255 255 / 0.06);
+  --nav-edge: transparent;
+
+  /* Status and money */
+  --positive: #15803d;
+  --negative: #b91c1c;
+  --warning: #b45309;
+  --info: #1d4ed8;
+  --negative-soft: #fef2f2;
+  --on-negative-soft: #991b1b;
+
+  /* Focus */
+  --ring: #2563eb;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(11 18 32 / 0.06), 0 1px 3px rgb(11 18 32 / 0.08);
+  --shadow-overlay: 0 12px 32px rgb(11 18 32 / 0.18);
+  --scrim: rgb(5 11 23 / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #070d1a;
+    --surface: #0f1829;
+    --surface-muted: #16213a;
+    --border: #223050;
+    --border-strong: #5b6c8c;
+    --fg: #e8edf5;
+    --fg-muted: #9aa8bd;
+    --primary: #7ea6f7;
+    --on-primary: #06102a;
+    --primary-hover: #9bbaf9;
+    --gold: #e3b341;
+    --gold-accent: #e3b341;
+    --gold-soft: #2a2310;
+    --on-gold-soft: #f0cb6e;
+    --nav: #050b17;
+    --on-nav: #e6ecf5;
+    --nav-muted: #8c9bb4;
+    --nav-hover: rgb(255 255 255 / 0.05);
+    --nav-edge: #1a2540; /* separates the navy rail from the near-black page */
+    --positive: #4ade80;
+    --negative: #f87171;
+    --warning: #fbbf24;
+    --info: #93b4fa;
+    --negative-soft: #2a1215;
+    --on-negative-soft: #fca5a5;
+    --ring: #7ea6f7;
+    --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
+    --shadow-overlay: 0 12px 32px rgb(0 0 0 / 0.5);
+    --scrim: rgb(0 0 0 / 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #070d1a;
+  --surface: #0f1829;
+  --surface-muted: #16213a;
+  --border: #223050;
+  --border-strong: #5b6c8c;
+  --fg: #e8edf5;
+  --fg-muted: #9aa8bd;
+  --primary: #7ea6f7;
+  --on-primary: #06102a;
+  --primary-hover: #9bbaf9;
+  --gold: #e3b341;
+  --gold-accent: #e3b341;
+  --gold-soft: #2a2310;
+  --on-gold-soft: #f0cb6e;
+  --nav: #050b17;
+  --on-nav: #e6ecf5;
+  --nav-muted: #8c9bb4;
+  --nav-hover: rgb(255 255 255 / 0.05);
+  --nav-edge: #1a2540; /* separates the navy rail from the near-black page */
+  --positive: #4ade80;
+  --negative: #f87171;
+  --warning: #fbbf24;
+  --info: #93b4fa;
+  --negative-soft: #2a1215;
+  --on-negative-soft: #fca5a5;
+  --ring: #7ea6f7;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --shadow-overlay: 0 12px 32px rgb(0 0 0 / 0.5);
+  --scrim: rgb(0 0 0 / 0.6);
+}

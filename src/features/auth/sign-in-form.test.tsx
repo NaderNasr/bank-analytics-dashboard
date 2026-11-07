@@ -1,6 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+
+import { renderWithIntl } from "@/test/intl";
 
 import { SignInForm } from "./sign-in-form";
 import type { SignInState } from "./sign-in-state";
@@ -9,7 +11,15 @@ const demo = { email: "demo@bank-analytics.dev", password: "correct-horse" };
 
 function setup(result: SignInState, props: Partial<Parameters<typeof SignInForm>[0]> = {}) {
   const action = vi.fn(async (_prev: SignInState, _formData: FormData) => result);
-  render(<SignInForm action={action} callbackUrl="/transactions" demo={demo} {...props} />);
+  renderWithIntl(
+    <SignInForm
+      action={action}
+      callbackUrl="/en/transactions"
+      locale="en"
+      demo={demo}
+      {...props}
+    />,
+  );
   return { action, user: userEvent.setup() };
 }
 
@@ -34,7 +44,8 @@ describe("SignInForm", () => {
     const formData = action.mock.calls[0]?.[1];
     expect(formData?.get("email")).toBe(demo.email);
     expect(formData?.get("password")).toBe(demo.password);
-    expect(formData?.get("callbackUrl")).toBe("/transactions");
+    expect(formData?.get("callbackUrl")).toBe("/en/transactions");
+    expect(formData?.get("locale")).toBe("en");
   });
 
   it("announces wrong credentials and keeps the email", async () => {
@@ -51,7 +62,7 @@ describe("SignInForm", () => {
   it("marks invalid fields and links their messages", async () => {
     const { user } = setup({
       error: "invalid_input",
-      fieldErrors: { email: "Enter a valid email address.", password: "Enter your password." },
+      fieldErrors: { email: "emailInvalid", password: "passwordRequired" },
       email: "demo",
     });
     await user.click(screen.getByRole("button", { name: "Sign in" }));
@@ -65,5 +76,18 @@ describe("SignInForm", () => {
   it("shows an error carried in the URL before any submit", () => {
     setup({ error: null }, { initialError: "server_error" });
     expect(screen.getByRole("alert")).toHaveTextContent("couldn't sign you in right now");
+  });
+
+  it("renders in Arabic with translated errors", async () => {
+    const action = vi.fn(async () => ({ error: "invalid_credentials" as const }));
+    renderWithIntl(<SignInForm action={action} callbackUrl="/ar" locale="ar" demo={demo} />, "ar");
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: "تسجيل الدخول" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "البريد الإلكتروني وكلمة المرور غير متطابقين مع سجلاتنا.",
+    );
+    // Emails and passwords stay left-to-right inside the right-to-left page.
+    expect(screen.getByLabelText("البريد الإلكتروني")).toHaveAttribute("dir", "ltr");
   });
 });

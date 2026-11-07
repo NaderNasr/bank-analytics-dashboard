@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { safeCallbackUrl, signInUrlFor } from "./callback-url";
+import { isSignInPath, localeOfPath, safeCallbackUrl, signInUrlFor } from "./callback-url";
 
 describe("safeCallbackUrl", () => {
   it.each([
-    ["/", "/"],
-    ["/transactions", "/transactions"],
-    ["/transactions?status=failed&page=2", "/transactions?status=failed&page=2"],
-    ["/transactions#row-4", "/transactions#row-4"],
+    ["/en", "/en"],
+    ["/ar/transactions", "/ar/transactions"],
+    ["/en/transactions?status=failed&page=2", "/en/transactions?status=failed&page=2"],
+    ["/en/transactions#row-4", "/en/transactions#row-4"],
   ])("keeps the same-origin path %s", (input, expected) => {
     expect(safeCallbackUrl(input)).toBe(expected);
   });
@@ -21,29 +21,44 @@ describe("safeCallbackUrl", () => {
     ["control characters", "/\tevil"],
     ["empty string", ""],
     ["non-string", ["/a", "/b"]],
-    ["the sign-in page itself", "/sign-in?callbackUrl=/"],
-    ["an Auth.js endpoint", "/api/auth/signout"],
+    ["a sign-in page", "/ar/sign-in?callbackUrl=/"],
+    ["an API route", "/api/auth/signout"],
   ])("rejects %s", (_label, input) => {
-    expect(safeCallbackUrl(input)).toBe("/");
+    expect(safeCallbackUrl(input)).toBe("/en");
   });
 
   it("uses the given fallback", () => {
-    expect(safeCallbackUrl("https://evil.example", "/home")).toBe("/home");
+    expect(safeCallbackUrl("https://evil.example", "/ar")).toBe("/ar");
   });
 
   it("normalises dot segments without escaping the origin", () => {
-    expect(safeCallbackUrl("/a/../../etc")).toBe("/etc");
+    expect(safeCallbackUrl("/en/a/../../etc")).toBe("/etc");
   });
 });
 
 describe("signInUrlFor", () => {
-  it("omits the callback for the dashboard root", () => {
-    expect(signInUrlFor("/")).toBe("/sign-in");
+  it("omits the callback for the dashboard root of that locale", () => {
+    expect(signInUrlFor("/ar", "ar")).toBe("/ar/sign-in");
   });
 
   it("encodes the original path and query", () => {
-    expect(signInUrlFor("/transactions?q=coffee")).toBe(
-      "/sign-in?callbackUrl=%2Ftransactions%3Fq%3Dcoffee",
+    expect(signInUrlFor("/en/transactions?q=coffee", "en")).toBe(
+      "/en/sign-in?callbackUrl=%2Fen%2Ftransactions%3Fq%3Dcoffee",
     );
+  });
+});
+
+describe("path helpers", () => {
+  it("recognises sign-in pages with or without a locale", () => {
+    expect(isSignInPath("/sign-in")).toBe(true);
+    expect(isSignInPath("/ar/sign-in")).toBe(true);
+    expect(isSignInPath("/en/sign-in-help")).toBe(false);
+  });
+
+  it("reads the locale prefix", () => {
+    expect(localeOfPath("/ar/transactions")).toBe("ar");
+    expect(localeOfPath("/en")).toBe("en");
+    expect(localeOfPath("/english")).toBeNull();
+    expect(localeOfPath("/")).toBeNull();
   });
 });

@@ -7,18 +7,22 @@ import { z } from "zod";
  * Imported only from server code.
  */
 
+/** Messages are translation keys (SignIn.fields.*), resolved in the form for the active locale. */
 export const signInSchema = z.object({
   email: z
-    .string({ message: "Enter your email address." })
+    .string({ message: "emailRequired" })
     .trim()
-    .min(1, "Enter your email address.")
-    .max(254, "That email address is too long.")
-    .pipe(z.email({ message: "Enter a valid email address." })),
+    .min(1, "emailRequired")
+    .max(254, "emailTooLong")
+    .pipe(z.email({ message: "emailInvalid" })),
   password: z
-    .string({ message: "Enter your password." })
-    .min(1, "Enter your password.")
-    .max(200, "That password is too long."),
+    .string({ message: "passwordRequired" })
+    .min(1, "passwordRequired")
+    .max(200, "passwordTooLong"),
 });
+
+export type SignInFieldErrorKey =
+  "emailRequired" | "emailInvalid" | "emailTooLong" | "passwordRequired" | "passwordTooLong";
 
 export type SignInInput = z.infer<typeof signInSchema>;
 
