@@ -35,6 +35,15 @@ describe("parseAuthEnv", () => {
     ).toThrow(/AUTH_SECRET must be at least 32/);
   });
 
+  it("rejects the .env.example placeholder secret", () => {
+    expect(() =>
+      parseAuthEnv({
+        AUTH_SECRET: "replace-with-a-long-random-string-of-32-chars-or-more",
+        DEMO_USER_PASSWORD: "correct-horse",
+      }),
+    ).toThrow(/placeholder/);
+  });
+
   it("requires the demo password", () => {
     expect(() => parseAuthEnv({ AUTH_SECRET: secret })).toThrow(/DEMO_USER_PASSWORD/);
   });
