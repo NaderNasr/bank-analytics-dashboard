@@ -33,7 +33,7 @@ export function MobileNav() {
         onClick={(event) => {
           if (event.target === dialog.current) close(); // click on the backdrop
         }}
-        className="m-0 h-dvh max-h-dvh w-72 max-w-[85vw] bg-nav p-0 text-on-nav shadow-overlay backdrop:bg-scrim"
+        className="drawer m-0 h-dvh max-h-dvh w-72 max-w-[85vw] bg-nav p-0 text-on-nav shadow-overlay backdrop:bg-scrim"
       >
         <div className="flex h-full flex-col gap-6 p-4">
           <div className="flex items-center justify-between">

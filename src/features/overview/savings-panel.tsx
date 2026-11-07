@@ -16,6 +16,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 
 import { getJson } from "@/components/providers/query-provider";
+import { useCountUp } from "@/hooks/use-count-up";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { InsightsResponse } from "@/lib/api/types";
@@ -86,10 +87,13 @@ export function SavingsPanel({ months, currency }: { months: RangeMonths; curren
       ) : (
         <div className="flex flex-col gap-5" data-testid="savings">
           <div className="flex items-center gap-3 rounded-lg bg-gold-soft p-4 text-on-gold-soft">
-            <PiggyBank aria-hidden className="size-8 shrink-0" />
+            <PiggyBank aria-hidden className="size-8 shrink-0 animate-spin-in" />
             <div>
               <p className="text-base font-semibold">
-                <bdi>{t("total", { monthly: whole(data.totalMonthlySavingMinor) })}</bdi>
+                <CountedTotal
+                  minor={data.totalMonthlySavingMinor}
+                  render={(m) => t("total", { monthly: whole(m) })}
+                />
               </p>
               <p className="text-sm">
                 <bdi>{t("totalYear", { yearly: whole(data.totalMonthlySavingMinor * 12) })}</bdi>
@@ -132,10 +136,13 @@ export function SavingsPanel({ months, currency }: { months: RangeMonths; curren
                   {insight.link ? (
                     <Link
                       href={{ pathname: "/transactions", query: insight.link }}
-                      className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                      className="group mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                     >
                       {t("seeTransactions")}
-                      <ArrowUpRight aria-hidden className="size-4 rtl:-scale-x-100" />
+                      <ArrowUpRight
+                        aria-hidden
+                        className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5"
+                      />
                     </Link>
                   ) : null}
                 </li>
@@ -157,4 +164,9 @@ export function SavingsPanel({ months, currency }: { months: RangeMonths; curren
       )}
     </Panel>
   );
+}
+
+function CountedTotal({ minor, render }: { minor: number; render: (minor: number) => string }) {
+  const shown = useCountUp(minor, { fromZero: true, durationMs: 800 });
+  return <bdi>{render(Math.round(shown))}</bdi>;
 }

@@ -117,7 +117,7 @@ export function SignInForm({
         type="submit"
         disabled={pending}
         aria-disabled={pending}
-        className="mt-1 h-11 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors duration-150 hover:bg-primary-hover disabled:cursor-wait disabled:opacity-70"
+        className="press mt-1 h-11 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-hover disabled:cursor-wait disabled:opacity-70"
       >
         {pending ? t("submitting") : t("submit")}
       </button>
@@ -151,7 +151,7 @@ export function SignInForm({
         <button
           type="button"
           onClick={fillDemo}
-          className="mt-3 inline-flex min-h-9 items-center rounded-md bg-surface px-3 text-sm font-semibold text-fg ring-1 ring-border-strong transition-colors duration-150 hover:bg-surface-muted"
+          className="press mt-3 inline-flex min-h-9 items-center rounded-md bg-surface px-3 text-sm font-semibold text-fg ring-1 ring-border-strong hover:bg-surface-muted"
         >
           {t("useDemo")}
         </button>

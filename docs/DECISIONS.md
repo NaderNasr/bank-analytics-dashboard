@@ -484,3 +484,21 @@ visual direction was agreed from a static preview before any component was built
   category, reusing the URL state from 009.
 - **Separate endpoint** (`/api/insights`, same window parameters as `/api/summary`) so the
   suggestions load and cache independently and the summary stays lean.
+
+## 013 — Micro-interactions
+
+**Date:** 2026-11-07
+
+### Decision
+
+- **CSS, not an animation library.** Keyframes and transitions in `globals.css` (exposed as
+  Tailwind utilities where variants are needed), plus one small hook. No runtime dependency and
+  nothing for the browser to parse on load; Lighthouse and CLS are unchanged.
+- **Purposeful and short (120–450 ms), transform and opacity only:** dashboard sections rise in
+  staggered reading order; KPI and savings totals count up with an ease-out (`useCountUp`, always
+  landing on the exact value); market cards lift on hover; buttons scale slightly on press; the
+  mobile drawer slides in from the inline-start edge using `@starting-style`, mirrored for
+  Arabic; the theme icon spins in; the active nav marker grows in.
+- **Reduced motion is respected everywhere:** the global reduced-motion rule neutralises CSS
+  motion, and `useCountUp` shows the final value at once. The accessibility audit runs with
+  reduced motion so it judges the settled page, not text mid-fade.

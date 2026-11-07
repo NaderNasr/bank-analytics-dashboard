@@ -2,6 +2,9 @@
 
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import type { CSSProperties } from "react";
+
+import { useCountUp } from "@/hooks/use-count-up";
 
 import type { Locale } from "@/i18n/routing";
 import type { SummaryResponse } from "@/lib/api/types";
@@ -38,22 +41,35 @@ function DeltaBadge({ delta, label }: { delta: Delta; label: string }) {
   );
 }
 
+/** A number that counts up to its value when it appears or changes. */
+function Counted({ value, format }: { value: number; format: (n: number) => string }) {
+  const shown = useCountUp(value, { fromZero: true });
+  return <>{format(shown)}</>;
+}
+
 function Tile({
   label,
   value,
+  format,
   hint,
   delta,
+  index,
 }: {
   label: string;
-  value: string;
+  value: number | null;
+  format: (n: number) => string;
   hint?: string;
   delta?: Delta;
+  index: number;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-surface p-4 shadow-card">
+    <div
+      className="animate-rise rounded-lg border border-border bg-surface p-4 shadow-card"
+      style={{ "--stagger": index } as CSSProperties}
+    >
       <p className="text-sm font-medium text-fg-muted">{label}</p>
       <p className="mt-1.5 text-2xl font-semibold tracking-tight text-fg tabular" dir="ltr">
-        <bdi>{value}</bdi>
+        <bdi>{value === null ? "—" : <Counted value={value} format={format} />}</bdi>
       </p>
       {delta ? <DeltaBadge delta={delta} label={delta.text} /> : null}
       {hint ? <p className="mt-2 text-xs text-fg-muted">{hint}</p> : null}
@@ -83,23 +99,31 @@ export function KpiCards({ data }: { data: SummaryResponse }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" data-testid="kpis">
       <Tile
+        index={0}
         label={t("balance")}
-        value={money(data.balances.totalMinor)}
+        value={data.balances.totalMinor}
+        format={(n) => money(Math.round(n))}
         hint={t("balanceHint", { count: data.balances.accounts.length })}
       />
       <Tile
+        index={1}
         label={t("income")}
-        value={money(kpis.incomeMinor)}
+        value={kpis.incomeMinor}
+        format={(n) => money(Math.round(n))}
         delta={{ text: pct(incomeChange), ...deltaFor(incomeChange, "higher-is-better") }}
       />
       <Tile
+        index={2}
         label={t("spending")}
-        value={money(kpis.spendingMinor)}
+        value={kpis.spendingMinor}
+        format={(n) => money(Math.round(n))}
         delta={{ text: pct(spendingChange), ...deltaFor(spendingChange, "lower-is-better") }}
       />
       <Tile
+        index={3}
         label={t("savingsRate")}
-        value={kpis.savingsRate === null ? "—" : formatPercent(kpis.savingsRate, locale)}
+        value={kpis.savingsRate}
+        format={(n) => formatPercent(n, locale)}
         delta={{
           text:
             rateChange === null

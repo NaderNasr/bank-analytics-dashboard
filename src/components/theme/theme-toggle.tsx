@@ -30,9 +30,9 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={cycle}
       aria-label={`${t("theme")}: ${t(LABEL_KEYS[theme])}`}
       title={`${t("theme")}: ${t(LABEL_KEYS[theme])}`}
-      className={`inline-flex size-11 items-center justify-center rounded-md text-fg-muted transition-colors duration-150 hover:bg-surface-muted hover:text-fg sm:size-9 ${className}`}
+      className={`press inline-flex size-11 items-center justify-center rounded-md text-fg-muted hover:bg-surface-muted hover:text-fg sm:size-9 ${className}`}
     >
-      <Icon aria-hidden className="size-[18px]" />
+      <Icon key={theme} aria-hidden className="size-[18px] animate-spin-in" />
     </button>
   );
 }

@@ -40,7 +40,7 @@ export async function UserMenu() {
           type="submit"
           aria-label={t("signOut")}
           title={t("signOut")}
-          className="inline-flex size-11 items-center justify-center rounded-md text-fg-muted transition-colors duration-150 hover:bg-surface-muted hover:text-fg sm:size-9"
+          className="press inline-flex size-11 items-center justify-center rounded-md text-fg-muted hover:bg-surface-muted hover:text-fg sm:size-9"
         >
           <LogOut aria-hidden className="size-[18px] rtl:-scale-x-100" />
         </button>

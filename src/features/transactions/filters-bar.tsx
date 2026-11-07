@@ -142,7 +142,7 @@ export function FiltersBar({ filters, total, onChange, onClear }: FiltersBarProp
                 setSearch("");
                 onClear();
               }}
-              className="inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-fg-muted hover:bg-surface-muted hover:text-fg"
+              className="press inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-fg-muted hover:bg-surface-muted hover:text-fg"
             >
               <X aria-hidden className="size-4" />
               {t("clear")}
@@ -152,7 +152,7 @@ export function FiltersBar({ filters, total, onChange, onClear }: FiltersBarProp
             href={`/api/transactions/export${exportQs ? `?${exportQs}` : ""}`}
             download
             aria-label={total !== undefined ? t("exportLabel", { count: total }) : t("export")}
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors duration-150 hover:bg-primary-hover"
+            className="press inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-hover"
           >
             <Download aria-hidden className="size-4" />
             {t("export")}

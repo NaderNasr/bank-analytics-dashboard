@@ -269,7 +269,7 @@ function QuoteCard({
       onClick={onSelect}
       aria-pressed={selected}
       data-testid={`quote-${instrument.id}`}
-      className={`flex w-full flex-col gap-3 rounded-lg border bg-surface p-4 text-start shadow-card transition-colors duration-150 hover:border-border-strong ${
+      className={`lift flex w-full flex-col gap-3 rounded-lg border bg-surface p-4 text-start shadow-card hover:border-border-strong ${
         selected ? "border-primary ring-1 ring-primary" : "border-border"
       }`}
     >

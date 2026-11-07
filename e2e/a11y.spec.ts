@@ -31,7 +31,8 @@ async function signIn(page: Page, locale: "en" | "ar") {
 for (const locale of ["en", "ar"] as const) {
   for (const theme of ["light", "dark"] as const) {
     test(`no WCAG 2.1 AA violations: ${locale}, ${theme}`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: theme });
+      // Audit the settled page: mid-animation opacity would read as low contrast.
+      await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
       await page.routeWebSocket(COINBASE, () => {});
       await signIn(page, locale);
 

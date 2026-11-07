@@ -22,9 +22,9 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 href={href}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors duration-150 ${
+                className={`press relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium ${
                   active
-                    ? "bg-nav-hover text-on-nav before:absolute before:inset-y-2 before:start-0 before:w-[3px] before:rounded-full before:bg-gold-accent"
+                    ? "bg-nav-hover text-on-nav before:absolute before:inset-y-2 before:start-0 before:w-[3px] before:animate-grow-y before:rounded-full before:bg-gold-accent"
                     : "text-nav-muted hover:bg-nav-hover hover:text-on-nav"
                 }`}
               >

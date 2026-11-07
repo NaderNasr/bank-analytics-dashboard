@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AlertCircle, RotateCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 
 import type { Locale } from "@/i18n/routing";
 import { formatDay } from "@/lib/format";
@@ -92,19 +92,25 @@ export function OverviewDashboard() {
           aria-busy={isFetching}
         >
           <KpiCards data={data} />
-          <div className="grid gap-6 xl:grid-cols-3">
+          <Rise index={4} className="grid gap-6 xl:grid-cols-3">
             <div className="min-w-0 xl:col-span-2">
               <BalanceChart data={data} />
             </div>
             <AccountsList data={data} />
-          </div>
-          <CashFlowChart data={data} />
-          <SpendingHeatmap data={data} />
-          <SavingsPanel months={months} currency={data.currency} />
-          <div className="grid gap-6 lg:grid-cols-2">
+          </Rise>
+          <Rise index={5}>
+            <CashFlowChart data={data} />
+          </Rise>
+          <Rise index={6}>
+            <SpendingHeatmap data={data} />
+          </Rise>
+          <Rise index={7}>
+            <SavingsPanel months={months} currency={data.currency} />
+          </Rise>
+          <Rise index={8} className="grid gap-6 lg:grid-cols-2">
             <CategoryBreakdown data={data} />
             <TopMerchants data={data} />
-          </div>
+          </Rise>
         </div>
       ) : null}
     </div>
@@ -125,6 +131,23 @@ function DashboardSkeleton({ label }: { label: string }) {
         <div className={`${block} h-80`} />
       </div>
       <div className={`${block} h-48`} />
+    </div>
+  );
+}
+
+/** A section that fades and rises in, staggered after the KPI tiles (0–3). */
+function Rise({
+  index,
+  className = "",
+  children,
+}: {
+  index: number;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`animate-rise ${className}`} style={{ "--stagger": index } as CSSProperties}>
+      {children}
     </div>
   );
 }

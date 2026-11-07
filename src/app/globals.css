@@ -121,3 +121,102 @@
   fill: var(--chart-axis);
   font-family: inherit;
 }
+
+/*
+ * Micro-interactions. Short (150–450 ms), transform/opacity only (no layout shift), and all
+ * neutralised by the prefers-reduced-motion rule in the base layer.
+ */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+/* Sections entering in reading order: set --stagger on each (0, 1, 2…). */
+@utility animate-rise {
+  animation: rise-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 70ms);
+}
+
+@keyframes spin-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+}
+@utility animate-spin-in {
+  animation: spin-in 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@utility animate-grow-y {
+  animation: grow-y 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Cards that respond to the pointer: a 2px lift and a deeper shadow. */
+.lift {
+  transition:
+    transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 200ms ease,
+    border-color 150ms ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-overlay);
+}
+.lift:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Press feedback for buttons. */
+.press {
+  transition:
+    transform 120ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+.press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Mobile drawer: slides in from the inline-start edge, backdrop fades. */
+dialog.drawer {
+  transition:
+    translate 260ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    overlay 260ms allow-discrete,
+    display 260ms allow-discrete;
+  translate: 0 0;
+}
+dialog.drawer:not([open]) {
+  translate: -100% 0;
+}
+[dir="rtl"] dialog.drawer:not([open]) {
+  translate: 100% 0;
+}
+@starting-style {
+  dialog.drawer[open] {
+    translate: -100% 0;
+  }
+  [dir="rtl"] dialog.drawer[open] {
+    translate: 100% 0;
+  }
+}
+dialog.drawer::backdrop {
+  transition:
+    opacity 260ms ease,
+    overlay 260ms allow-discrete,
+    display 260ms allow-discrete;
+  opacity: 1;
+}
+dialog.drawer:not([open])::backdrop {
+  opacity: 0;
+}
+@starting-style {
+  dialog.drawer[open]::backdrop {
+    opacity: 0;
+  }
+}
