@@ -9,12 +9,12 @@ export interface ResolvedRange {
 }
 
 /**
- * Default: the 12 calendar months ending on `anchorDay` (the latest month may be partial). The
+ * Default: `months` (12) calendar months ending on `anchorDay` (the latest month may be partial). The
  * previous range is the same number of days immediately before, for KPI comparisons.
  */
 export function resolveSummaryRange(query: SummaryQuery, anchorDay: string): ResolvedRange {
   const to = query.to ?? anchorDay;
-  const from = query.from ?? startOfMonth(addMonths(to, -11));
+  const from = query.from ?? startOfMonth(addMonths(to, -(query.months - 1)));
   const length = daysInRange(from, to);
   const previousTo = addDays(from, -1);
   return { from, to, previousFrom: addDays(previousTo, -(length - 1)), previousTo };

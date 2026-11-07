@@ -101,7 +101,8 @@ export interface SummaryResponse {
   previousRange: { from: string; to: string };
   balances: { totalMinor: number; accounts: AccountSummary[] };
   kpis: Kpis;
-  previousKpis: Kpis;
+  /** Null when the previous period starts before the user's first transaction. */
+  previousKpis: Kpis | null;
   /** One entry per month in the range, oldest first, including empty months. */
   cashFlow: { month: string; incomeMinor: number; spendingMinor: number }[];
   /** Gross expense debits by category, largest first. */

@@ -53,9 +53,61 @@
   },
   "Overview": {
     "title": "نظرة عامة",
-    "greeting": "مرحبًا بعودتك، {name}",
-    "signedInAs": "تم تسجيل الدخول باسم {name}.",
-    "comingSoon": "الرسوم البيانية والمؤشرات وخريطة الإنفاق الحرارية في المرحلة الرابعة."
+    "description": "أموالك في لمحة، من {from} إلى {to}.",
+    "range": {
+      "label": "الفترة",
+      "months": "{count} أشهر",
+      "monthsLong": "آخر {count} أشهر"
+    },
+    "kpi": {
+      "balance": "إجمالي الرصيد",
+      "balanceHint": "عبر {count} حسابات",
+      "income": "الدخل",
+      "spending": "الإنفاق",
+      "savingsRate": "نسبة الادخار",
+      "vsPrevious": "{change} مقارنة بالفترة السابقة",
+      "noComparison": "لا توجد فترة سابقة للمقارنة",
+      "better": "أفضل",
+      "worse": "أسوأ",
+      "points": "{change} نقطة"
+    },
+    "cashFlow": {
+      "title": "التدفق النقدي",
+      "subtitle": "الدخل والإنفاق شهريًا",
+      "income": "الدخل",
+      "spending": "الإنفاق",
+      "net": "الصافي",
+      "tableCaption": "الدخل والإنفاق الشهري"
+    },
+    "categories": {
+      "title": "الإنفاق حسب الفئة",
+      "subtitle": "الحصة من إجمالي الإنفاق",
+      "other": "أخرى",
+      "transactions": "{count, plural, zero {لا معاملات} one {معاملة واحدة} two {معاملتان} few {# معاملات} many {# معاملة} other {# معاملة}}"
+    },
+    "heatmap": {
+      "title": "الإنفاق اليومي",
+      "subtitle": "الأيام الأغمق كلفتها أعلى",
+      "less": "أقل",
+      "more": "أكثر",
+      "noSpending": "لا إنفاق",
+      "summary": "أعلى أيام الإنفاق: {days}.",
+      "cell": "{day}: {amount}، {count, plural, zero {لا معاملات} one {معاملة واحدة} two {معاملتان} few {# معاملات} many {# معاملة} other {# معاملة}}"
+    },
+    "merchants": {
+      "title": "أكثر التجار إنفاقًا",
+      "subtitle": "أين ذهب معظم المال"
+    },
+    "accounts": {
+      "title": "الحسابات",
+      "available": "المتاح {amount}",
+      "limit": "الحد {amount}"
+    },
+    "error": {
+      "title": "تعذّر تحميل لوحة المعلومات.",
+      "retry": "حاول مرة أخرى"
+    },
+    "loading": "جارٍ تحميل لوحة المعلومات…"
   },
   "Transactions": {
     "title": "المعاملات",
@@ -69,5 +121,32 @@
     "title": "الصفحة غير موجودة",
     "body": "الصفحة التي تبحث عنها غير موجودة.",
     "home": "الذهاب إلى النظرة العامة"
+  },
+  "Categories": {
+    "salary": "الراتب",
+    "interest": "الفوائد",
+    "refunds": "المبالغ المستردة",
+    "rent": "الإيجار",
+    "groceries": "البقالة",
+    "dining": "المطاعم",
+    "coffee": "القهوة",
+    "transport": "المواصلات",
+    "fuel": "الوقود",
+    "utilities": "الخدمات",
+    "telecom": "الاتصالات",
+    "subscriptions": "الاشتراكات",
+    "shopping": "التسوق",
+    "health": "الصحة",
+    "entertainment": "الترفيه",
+    "travel": "السفر",
+    "education": "التعليم",
+    "cash": "النقد",
+    "fees": "الرسوم",
+    "transfers": "التحويلات"
+  },
+  "AccountTypes": {
+    "current": "الحساب الجاري",
+    "savings": "حساب التوفير",
+    "card": "البطاقة الائتمانية"
   }
 }

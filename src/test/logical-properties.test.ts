@@ -6,7 +6,9 @@ import { describe, expect, it } from "vitest";
 /**
  * The UI must mirror correctly in Arabic, so layout uses logical properties only (start/end,
  * inline/block). This guard fails on physical left/right utilities and CSS properties.
- * Direction-specific tweaks are still possible with the `rtl:`/`ltr:` variants.
+ * Direction-specific tweaks are still possible with the `rtl:`/`ltr:` variants. A line that must
+ * name a physical side (e.g. a chart library's axis orientation chosen from the direction) can opt
+ * out with a `logical-properties: allow` comment on the line before it.
  */
 const ROOT = join(process.cwd(), "src");
 
@@ -36,7 +38,10 @@ describe("logical properties only", () => {
   });
 
   it.each(sources.map((p) => [relative(ROOT, p), p]))("%s", (_name, path) => {
-    const source = readFileSync(path, "utf8");
+    const source = readFileSync(path, "utf8").replace(
+      /\/\/ logical-properties: allow[^\n]*\n[^\n]*/g,
+      "",
+    );
     const hits = path.endsWith(".css")
       ? [...source.matchAll(CSS_PHYSICAL)].map((m) => m[0])
       : classStrings(source)

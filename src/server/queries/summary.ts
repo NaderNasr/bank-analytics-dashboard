@@ -69,17 +69,23 @@ async function kpis(
 }
 
 /**
- * The local day of the user's latest transaction, or today if there is none. Anchoring the
- * default range to the data (not the clock) keeps a seeded demo meaningful long after seeding.
+ * The local days of the user's first and latest transactions (today if there are none). Anchoring
+ * the default range to the data (not the clock) keeps a seeded demo meaningful long after seeding.
  */
-async function latestActivityDay(db: Db, userId: string): Promise<string> {
+async function activityBounds(db: Db, userId: string): Promise<{ first: string; latest: string }> {
   const [row] = await db
-    .select({ latest: sql<Date | null>`max(${transactions.occurredAt})` })
+    .select({
+      first: sql<Date | null>`min(${transactions.occurredAt})`,
+      latest: sql<Date | null>`max(${transactions.occurredAt})`,
+    })
     .from(transactions)
     .innerJoin(accounts, eq(accounts.id, transactions.accountId))
     .where(eq(accounts.userId, userId));
-  const latest = row?.latest ? new Date(row.latest) : new Date();
-  return localDay(latest);
+  const today = localDay(new Date());
+  return {
+    first: row?.first ? localDay(new Date(row.first)) : today,
+    latest: row?.latest ? localDay(new Date(row.latest)) : today,
+  };
 }
 
 export async function getSummary(
@@ -87,7 +93,11 @@ export async function getSummary(
   userId: string,
   query: SummaryQuery,
 ): Promise<SummaryResponse> {
-  const range = resolveSummaryRange(query, query.to ?? (await latestActivityDay(db, userId)));
+  const bounds = await activityBounds(db, userId);
+  const range = resolveSummaryRange(query, query.to ?? bounds.latest);
+  // A previous period that starts before the history does compares against a partly empty window
+  // ("+106% income"), so there is no comparison in that case.
+  const comparable = range.previousFrom >= bounds.first;
   const where = scope(userId, range.from, range.to, query.account);
   const month = sql<string>`to_char(${transactions.occurredAt} AT TIME ZONE ${TZ}, 'YYYY-MM')`;
   const day = sql<string>`to_char(${transactions.occurredAt} AT TIME ZONE ${TZ}, 'YYYY-MM-DD')`;
@@ -96,7 +106,7 @@ export async function getSummary(
     await Promise.all([
       listAccounts(db, userId),
       kpis(db, userId, range.from, range.to, query.account),
-      kpis(db, userId, range.previousFrom, range.previousTo, query.account),
+      comparable ? kpis(db, userId, range.previousFrom, range.previousTo, query.account) : null,
       db
         .select({
           month,

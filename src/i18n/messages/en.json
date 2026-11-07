@@ -53,9 +53,61 @@
   },
   "Overview": {
     "title": "Overview",
-    "greeting": "Welcome back, {name}",
-    "signedInAs": "Signed in as {name}.",
-    "comingSoon": "Charts, KPIs and the spending heatmap arrive in Phase 4."
+    "description": "Your money at a glance, from {from} to {to}.",
+    "range": {
+      "label": "Period",
+      "months": "{count}M",
+      "monthsLong": "Last {count} months"
+    },
+    "kpi": {
+      "balance": "Total balance",
+      "balanceHint": "Across {count} accounts",
+      "income": "Income",
+      "spending": "Spending",
+      "savingsRate": "Savings rate",
+      "vsPrevious": "{change} vs previous period",
+      "noComparison": "No previous period to compare",
+      "better": "better",
+      "worse": "worse",
+      "points": "{change} pts"
+    },
+    "cashFlow": {
+      "title": "Cash flow",
+      "subtitle": "Income and spending per month",
+      "income": "Income",
+      "spending": "Spending",
+      "net": "Net",
+      "tableCaption": "Monthly income and spending"
+    },
+    "categories": {
+      "title": "Spending by category",
+      "subtitle": "Share of total spending",
+      "other": "Other",
+      "transactions": "{count, plural, one {# transaction} other {# transactions}}"
+    },
+    "heatmap": {
+      "title": "Daily spending",
+      "subtitle": "Darker days cost more",
+      "less": "Less",
+      "more": "More",
+      "noSpending": "No spending",
+      "summary": "Highest spending days: {days}.",
+      "cell": "{day}: {amount}, {count, plural, one {# transaction} other {# transactions}}"
+    },
+    "merchants": {
+      "title": "Top merchants",
+      "subtitle": "Where most of the money went"
+    },
+    "accounts": {
+      "title": "Accounts",
+      "available": "Available {amount}",
+      "limit": "Limit {amount}"
+    },
+    "error": {
+      "title": "We couldn't load your dashboard.",
+      "retry": "Try again"
+    },
+    "loading": "Loading your dashboard…"
   },
   "Transactions": {
     "title": "Transactions",
@@ -69,5 +121,32 @@
     "title": "Page not found",
     "body": "The page you're looking for doesn't exist.",
     "home": "Go to overview"
+  },
+  "Categories": {
+    "salary": "Salary",
+    "interest": "Interest",
+    "refunds": "Refunds",
+    "rent": "Rent",
+    "groceries": "Groceries",
+    "dining": "Dining",
+    "coffee": "Coffee",
+    "transport": "Transport",
+    "fuel": "Fuel",
+    "utilities": "Utilities",
+    "telecom": "Telecom",
+    "subscriptions": "Subscriptions",
+    "shopping": "Shopping",
+    "health": "Health",
+    "entertainment": "Entertainment",
+    "travel": "Travel",
+    "education": "Education",
+    "cash": "Cash",
+    "fees": "Fees",
+    "transfers": "Transfers"
+  },
+  "AccountTypes": {
+    "current": "Current",
+    "savings": "Savings",
+    "card": "Credit card"
   }
 }

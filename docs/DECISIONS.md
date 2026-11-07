@@ -316,3 +316,41 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
   page and links that can't be shared per language.
 - **IBM Plex Sans Arabic** for Arabic. Close in tone; Noto Sans Arabic was the skill's
   highest-ranked Arabic sans and has a wider weight range.
+
+## 008 — Overview dashboard: data fetching, charts and a sign-out race
+
+**Date:** 2026-11-07 · **Phase:** 4
+
+### Decision
+
+- **TanStack Query on the client** (`QueryProvider` in the signed-in layout). The page shell and
+  a skeleton prerender; `/api/summary?months=3|6|12` loads in the browser and stays cached for a
+  minute, with the previous range kept on screen (dimmed, `aria-busy`) while a new one loads.
+  4xx errors are not retried; an inline alert offers a retry.
+- **`months` on the summary API.** The window is anchored to the latest transaction, so "last 3
+  months" is meaningful for seeded data. **Comparisons are only shown when the previous period
+  is fully inside the history**; otherwise `previousKpis` is `null` and the tiles say there is
+  nothing to compare, instead of "+106% income" against a half-empty year.
+- **Forms by job (dataviz method):** KPIs are stat tiles (not charts) with direction-aware deltas
+  (higher spending is "worse") carried by an arrow and screen-reader text, not colour alone;
+  cash flow is grouped bars, two series on one axis, with a legend and an `sr-only` table;
+  categories are sorted single-hue bars with values written beside them, folding the tail into
+  "Other"; daily spending is a calendar heatmap on a one-hue sequential ramp.
+- **Chart colours are validated, not picked by eye.** Income blue `#2a78d6` and spending gold
+  `#c98500` (dark: `#3987e5` / `#c98500`) pass the palette checks (CVD separation, lightness band,
+  3:1 against the surface) in both themes, and keep the navy/gold identity. Green and red stay
+  reserved for good/bad deltas.
+- **D3 for the heatmap's maths, React for its DOM.** `buildCalendar` (pure, tested) lays out every
+  day Sunday-first and quantizes amounts on a square-root scale so a few large days (rent,
+  travel) don't flatten the rest. Recharts for the bar chart.
+- **RTL charts.** SVG `text-anchor` follows the inherited direction, which pushed labels outside
+  the plot in Arabic. Plots are drawn in LTR coordinates (`dir="ltr"` on the chart container) and
+  mirrored explicitly: reversed x-axis, value axis on the right, heatmap weeks flowing right to
+  left. Arabic keeps Latin digits (`ar-JO-u-nu-latn`).
+- **Sign-out race (bug found by the new tests).** Auth.js's middleware wrapper re-issues the
+  session cookie on every request. A dashboard request still in flight during sign-out set the
+  cookie again after sign-out cleared it, silently signing the user back in. The proxy now only
+  reads the token (`getToken`: decrypt and check expiry) and never writes cookies; sessions have a
+  fixed 8-hour lifetime from sign-in.
+- **The user menu calls `connection()`** before reading the session, so partial prefetches don't
+  run Auth.js's crypto during a prerender.

@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { connection } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { signOutAction } from "@/features/auth/actions";
@@ -15,6 +16,9 @@ function initials(name: string) {
 
 /** Reads the session, so it renders behind a Suspense boundary in the shell. */
 export async function UserMenu() {
+  // Per-request data: keep it out of partial prefetches (Auth.js uses crypto randomness when it
+  // reads the session, which a prefetch prerender rejects).
+  await connection();
   const [session, t, locale] = await Promise.all([auth(), getTranslations("Shell"), getLocale()]);
   const name = session?.user?.name ?? session?.user?.email ?? "";
 
