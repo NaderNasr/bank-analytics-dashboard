@@ -52,7 +52,11 @@ export function migrationDatabaseUrl(env: ServerEnv): string {
 const authEnvSchema = z.object({
   AUTH_SECRET: z
     .string({ message: "AUTH_SECRET is required (generate one with `npx auth secret`)" })
-    .min(32, "AUTH_SECRET must be at least 32 characters"),
+    .min(32, "AUTH_SECRET must be at least 32 characters")
+    .refine(
+      (v) => !v.startsWith("replace-with"),
+      "AUTH_SECRET is still the .env.example placeholder; generate one with `npx auth secret`",
+    ),
   DEMO_USER_EMAIL: z
     .email({ message: "DEMO_USER_EMAIL must be an email address" })
     .default(DEMO_USER_EMAIL),
