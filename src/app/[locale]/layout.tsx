@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { THEME_SCRIPT } from "@/components/theme/theme";
+import { ThemeSync } from "@/components/theme/theme-sync";
 import { directionOf, isLocale, LOCALES } from "@/i18n/routing";
 
 import "../globals.css";
@@ -47,6 +48,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="min-h-dvh antialiased">
+        <ThemeSync />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

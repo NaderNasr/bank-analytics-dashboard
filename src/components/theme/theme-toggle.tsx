@@ -4,12 +4,11 @@ import { Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
 
-import { applyTheme, nextTheme, readTheme, type Theme } from "./theme";
+import { applyTheme, nextTheme, readTheme, THEME_EVENT, type Theme } from "./theme";
 
-const listeners = new Set<() => void>();
 function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+  document.documentElement.addEventListener(THEME_EVENT, listener);
+  return () => document.documentElement.removeEventListener(THEME_EVENT, listener);
 }
 
 const ICONS = { system: Monitor, light: Sun, dark: Moon } as const;
@@ -23,7 +22,6 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   function cycle() {
     applyTheme(nextTheme(theme));
-    listeners.forEach((l) => l());
   }
 
   return (
