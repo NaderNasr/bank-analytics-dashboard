@@ -249,14 +249,14 @@ and are shown on the sign-in page, with the dashboard and API protected.
 
 The app is linked to a Neon project with `neon init` (`neon.ts` declares the services; Postgres
 only). `neon env pull` / `neon deploy` write `DATABASE_URL` (pooled, through PgBouncer in
-transaction mode) and `DATABASE_URL_UNPOOLED` (direct) into `.env.local`. Hosting is Vercel.
+transaction mode) and `DATABASE_URL_UNPOOLED` (direct) into `.env.local`. Hosting was planned
+for Vercel and moved to Netlify in Phase 7 (see 011).
 
 ### Decision
 
-- **Keep node-postgres (`pg`) with Drizzle.** Neon's guidance for Vercel is `pg` on Fluid compute
-  with `attachDatabasePool` from `@vercel/functions`, which keeps a suspended instance alive until
-  idle connections close. `getDb()` calls it; it is a no-op off Vercel. The serverless HTTP driver
-  is for edge runtimes, and nothing here runs on the edge (the proxy runs on Node in Next 16).
+- **Keep node-postgres (`pg`) with Drizzle.** It works the same against Neon and a local
+  Postgres, supports transactions (the seed needs one) and keeps one database type across the
+  codebase. Pool settings for serverless hosting are in 011.
 - **The app uses the pooled `DATABASE_URL`.** Bursty serverless concurrency is what PgBouncer is
   for, and the app's queries are single statements or short transactions.
 - **Migrations and the seed use `DATABASE_URL_UNPOOLED` when set** (`migrationDatabaseUrl`),
@@ -426,3 +426,37 @@ visual direction was agreed from a static preview before any component was built
   live path, the subscribe message and the outage fallback are all tested deterministically.
 - **Arabic number display:** dollars show as `USD` (Arabic's `US$` reorders to `$US` in
   right-to-left text); the dinar keeps its Arabic sign.
+
+## 011 — Release audit and Netlify hosting
+
+**Date:** 2026-11-07 · **Phase:** 7
+
+### Decision
+
+- **Hosting on Netlify** with its Next.js adapter (`@netlify/plugin-nextjs`, pinned as a dev
+  dependency, configured in `netlify.toml`). Pages and route handlers run as Netlify Functions
+  (AWS Lambda); the Node-runtime proxy runs through the adapter's Node middleware handler; static
+  assets are served from the CDN. A local `netlify build` compiles and bundles the functions; the
+  edge step needs Deno, which Netlify's build image provides.
+- **Postgres pool for frozen functions.** Lambda instances freeze between requests, so idle
+  connections close after 10 s and connection attempts time out after 10 s; a pool `error`
+  listener stops a dropped idle socket from crashing the function. The pooled Neon URL absorbs
+  concurrency. Neon's HTTP driver would shave the TCP/TLS handshake on cold starts, but would
+  split the codebase into two database types (it can't serve the seed's transaction or a local
+  Postgres); not worth it at this scale.
+- **Security headers on every response:** a CSP that limits scripts, styles, fonts, images and
+  connections to the site plus Coinbase's market-data socket and forbids framing; HSTS;
+  `nosniff`; a strict referrer policy; a permissions policy; no `X-Powered-By`. Scripts and
+  styles allow `'unsafe-inline'` because Next streams inline payloads and nonces would make every
+  page dynamic, losing the prerendered shells. Zod runs `jitless` so shared schemas never use
+  `eval` in the browser. Playwright fails the build on any CSP violation on any page.
+- **Accessibility audit in CI:** axe (WCAG 2.1 A/AA plus best practices) on every page in
+  English and Arabic, light and dark. The audit found accessible names that didn't contain the
+  visible label (WCAG 2.5.3) on four controls; all fixed.
+- **Measured, not assumed** (Lighthouse 12, desktop, production build): Performance 99–100,
+  Accessibility 100, Best Practices 100, SEO 100 on sign-in, overview, transactions and markets;
+  LCP 0.7–0.9 s, total blocking time ≤ 40 ms, CLS ≈ 0.
+- **Dependencies:** `npm audit --omit=dev` reports no vulnerabilities in what ships. The
+  remaining advisories are moderate and in development tooling only (an old esbuild inside
+  drizzle-kit, minimatch inside the ESLint packages); forcing their fixes would downgrade the
+  tooling, so they are tracked rather than patched.
