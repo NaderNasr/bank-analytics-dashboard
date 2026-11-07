@@ -340,9 +340,15 @@ visual direction was generated with the UI UX Pro Max skill and approved from a 
   `#c98500` (dark: `#3987e5` / `#c98500`) pass the palette checks (CVD separation, lightness band,
   3:1 against the surface) in both themes, and keep the navy/gold identity. Green and red stay
   reserved for good/bad deltas.
-- **D3 for the heatmap's maths, React for its DOM.** `buildCalendar` (pure, tested) lays out every
-  day Sunday-first and quantizes amounts on a square-root scale so a few large days (rent,
-  travel) don't flatten the rest. Recharts for the bar chart.
+- **The heatmap is D3 end to end** (revised after the first version used D3 only for one scale).
+  `buildCalendar` uses `d3-time` (`utcDay`, `utcSunday`, `utcMonth`) to place every day in a
+  Sunday-first week column, `d3-array` (`rollup`, `sum`, `max`) to aggregate, and a `d3-scale`
+  quantile scale for the five levels, so each level holds a similar number of days. The component
+  positions cells with `scaleBand` and draws them with a keyed `selection.join()`; switching
+  between 3, 6 and 12 months transitions cells in, moves and fades them out (`d3-transition`,
+  skipped under reduced motion). React owns only the container, legend and tooltip; fills are
+  theme tokens (`var(--heat-n)`), so light/dark switching needs no redraw. Recharts draws the
+  bar chart, where a declarative component library is the better fit.
 - **RTL charts.** SVG `text-anchor` follows the inherited direction, which pushed labels outside
   the plot in Arabic. Plots are drawn in LTR coordinates (`dir="ltr"` on the chart container) and
   mirrored explicitly: reversed x-axis, value axis on the right, heatmap weeks flowing right to
