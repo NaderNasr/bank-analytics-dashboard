@@ -171,7 +171,12 @@ interface PlannedEvent {
 }
 
 export function generateSeedData(options: SeedOptions = {}): SeedData {
-  const { seed, endDate, months, email } = { ...DEFAULT_SEED_OPTIONS, ...options };
+  // Explicitly undefined options fall back to the defaults instead of overriding them.
+  const defined = Object.fromEntries(Object.entries(options).filter(([, v]) => v !== undefined));
+  const { seed, endDate, months, email }: Required<SeedOptions> = {
+    ...DEFAULT_SEED_OPTIONS,
+    ...defined,
+  };
   const faker = new Faker({ locale: [en] });
   faker.seed(seed);
   const rand = () => faker.number.float({ min: 0, max: 1 });

@@ -21,6 +21,16 @@ describe("generateSeedData", () => {
     expect(other.transactions[100]?.id).not.toBe(txns[100]?.id);
   });
 
+  it("uses the given email, and the default when the option is undefined", () => {
+    expect(data.user.email).toBe("demo@bank-analytics.dev");
+    expect(generateSeedData({ months: 1, email: "someone@example.com" }).user.email).toBe(
+      "someone@example.com",
+    );
+    expect(generateSeedData({ months: 1, email: undefined }).user.email).toBe(
+      "demo@bank-analytics.dev",
+    );
+  });
+
   it("creates one customer with a current, a savings and a card account in JOD", () => {
     expect(accounts.map((a) => a.type).sort()).toEqual(["card", "current", "savings"]);
     expect(new Set(accounts.map((a) => a.userId))).toEqual(new Set([data.user.id]));
