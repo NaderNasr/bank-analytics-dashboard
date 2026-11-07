@@ -15,15 +15,33 @@ const serverEnvSchema = z.object({
   DATABASE_URL: z
     .url({ message: "DATABASE_URL must be a Postgres connection URL" })
     .refine((v) => /^postgres(ql)?:\/\//.test(v), "DATABASE_URL must start with postgres://"),
+  /**
+   * Neon's direct (non-pooled) URL, written by `neon env pull`. Optional: used for migrations and
+   * the seed, which need a session that PgBouncer's transaction mode does not guarantee.
+   */
+  DATABASE_URL_UNPOOLED: z
+    .url({ message: "DATABASE_URL_UNPOOLED must be a Postgres connection URL" })
+    .refine(
+      (v) => /^postgres(ql)?:\/\//.test(v),
+      "DATABASE_URL_UNPOOLED must start with postgres://",
+    )
+    .optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 export function parseServerEnv(source: Record<string, string | undefined>): ServerEnv {
-  const result = serverEnvSchema.safeParse(source);
+  // An empty value (e.g. `DATABASE_URL_UNPOOLED=`) means unset, not invalid.
+  const cleaned = Object.fromEntries(Object.entries(source).filter(([, v]) => v !== ""));
+  const result = serverEnvSchema.safeParse(cleaned);
   if (!result.success)
     throw new Error(`Invalid environment variables:\n${formatIssues(result.error)}`);
   return result.data;
+}
+
+/** The connection for schema migrations and the seed: direct when available, else DATABASE_URL. */
+export function migrationDatabaseUrl(env: ServerEnv): string {
+  return env.DATABASE_URL_UNPOOLED ?? env.DATABASE_URL;
 }
 
 /**

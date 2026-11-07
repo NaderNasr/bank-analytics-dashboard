@@ -240,3 +240,27 @@ and are shown on the sign-in page, with the dashboard and API protected.
   single public demo account.
 - **Rate limiting sign-in.** The demo password is public, so throttling protects nothing here. A
   real deployment would add it (for example Upstash Ratelimit on the action).
+
+## 006 — Neon wiring: pooled URL for the app, direct URL for migrations
+
+**Date:** 2026-11-07 · **Phase:** 2
+
+### Context
+
+The app is linked to a Neon project with `neon init` (`neon.ts` declares the services; Postgres
+only). `neon env pull` / `neon deploy` write `DATABASE_URL` (pooled, through PgBouncer in
+transaction mode) and `DATABASE_URL_UNPOOLED` (direct) into `.env.local`. Hosting is Vercel.
+
+### Decision
+
+- **Keep node-postgres (`pg`) with Drizzle.** Neon's guidance for Vercel is `pg` on Fluid compute
+  with `attachDatabasePool` from `@vercel/functions`, which keeps a suspended instance alive until
+  idle connections close. `getDb()` calls it; it is a no-op off Vercel. The serverless HTTP driver
+  is for edge runtimes, and nothing here runs on the edge (the proxy runs on Node in Next 16).
+- **The app uses the pooled `DATABASE_URL`.** Bursty serverless concurrency is what PgBouncer is
+  for, and the app's queries are single statements or short transactions.
+- **Migrations and the seed use `DATABASE_URL_UNPOOLED` when set** (`migrationDatabaseUrl`),
+  falling back to `DATABASE_URL` for a local Postgres. DDL and a long seeding transaction should
+  not depend on transaction-mode pooling.
+- `sslmode=verify-full` in connection strings, which is what `sslmode=require` means in `pg` today
+  and silences its deprecation warning.
