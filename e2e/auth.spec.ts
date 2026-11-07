@@ -47,7 +47,7 @@ test("the demo account button fills the form", async ({ page }) => {
   await page.goto("/en/sign-in");
   await page.getByRole("button", { name: "Use demo account" }).click();
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByText("Signed in as")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
 });
 
 test("ignores an off-site callback URL", async ({ page }) => {
@@ -63,7 +63,7 @@ test("protects the API and unlocks it after sign-in", async ({ page }) => {
 
   await page.goto("/en/sign-in");
   await signIn(page);
-  await expect(page.getByText("Signed in as")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
 
   const signedIn = await page.request.get("/api/accounts");
   expect(signedIn.status()).toBe(200);
@@ -74,7 +74,7 @@ test("protects the API and unlocks it after sign-in", async ({ page }) => {
 test("signing out ends the session", async ({ page }) => {
   await page.goto("/en/sign-in");
   await signIn(page);
-  await expect(page.getByText("Signed in as")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL("/en/sign-in");
@@ -87,7 +87,7 @@ test("signing out ends the session", async ({ page }) => {
 test("a signed-in visit to the sign-in page goes to the dashboard", async ({ page }) => {
   await page.goto("/en/sign-in");
   await signIn(page);
-  await expect(page.getByText("Signed in as")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
 
   await page.goto("/en/sign-in");
   await expect(page).toHaveURL("/en");

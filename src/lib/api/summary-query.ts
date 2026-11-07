@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isoDay, multi, searchParamsToObject } from "./params";
+import { intParam, isoDay, multi, searchParamsToObject } from "./params";
 
 export const summaryQuerySchema = z
   .object({
@@ -8,6 +8,8 @@ export const summaryQuerySchema = z
     from: isoDay,
     to: isoDay,
     account: multi(z.uuid({ message: "Not a valid account id" })),
+    /** Calendar months ending on `to` (or the latest activity) when `from` is not given. */
+    months: intParam({ min: 1, max: 36, default: 12 }),
   })
   .refine((v) => !v.from || !v.to || v.from <= v.to, {
     path: ["to"],

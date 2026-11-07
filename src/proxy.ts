@@ -1,6 +1,6 @@
-import type { NextAuthRequest } from "next-auth";
+import { getToken } from "next-auth/jwt";
 import createIntlMiddleware from "next-intl/middleware";
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 import { routing } from "@/i18n/routing";
 import {
@@ -10,7 +10,7 @@ import {
   safeCallbackUrl,
   signInUrlFor,
 } from "@/lib/auth/callback-url";
-import { auth } from "@/server/auth";
+import { getAuthEnv } from "@/server/env";
 
 const intl = createIntlMiddleware(routing);
 
@@ -24,10 +24,20 @@ const intl = createIntlMiddleware(routing);
  * - Anything else needs a session, or redirects to /{locale}/sign-in?callbackUrl=….
  *
  * Route handlers and pages check the session again, so this is not the only line of defence.
+ *
+ * The session is only *read* here (decrypt and check expiry), never re-issued. Auth.js's own
+ * middleware wrapper refreshes the cookie on every request, and a request still in flight during
+ * sign-out would then set the cookie again after sign-out cleared it, silently signing the user
+ * back in. Not rolling also gives sessions a fixed lifetime from sign-in (8 hours).
  */
-function gate(request: NextAuthRequest, _event: NextFetchEvent) {
+export default async function proxy(request: NextRequest) {
   const { pathname, search, searchParams, origin } = request.nextUrl;
-  const signedIn = Boolean(request.auth?.user?.id);
+  const token = await getToken({
+    req: request,
+    secret: getAuthEnv().AUTH_SECRET,
+    secureCookie: request.nextUrl.protocol === "https:",
+  });
+  const signedIn = Boolean(token?.sub);
 
   if (pathname.startsWith("/api/")) {
     if (signedIn) return NextResponse.next();
@@ -48,16 +58,6 @@ function gate(request: NextAuthRequest, _event: NextFetchEvent) {
 
   if (signedIn) return intl(request);
   return NextResponse.redirect(new URL(signInUrlFor(`${pathname}${search}`, locale), origin));
-}
-
-/**
- * Next statically checks for a function export, so the Auth.js wrapper is called from one. With a
- * lazily built config, `auth(gate)` resolves to the wrapper asynchronously (its types say
- * otherwise), hence the await.
- */
-export default async function proxy(request: NextRequest, event: NextFetchEvent) {
-  const withSession = await auth(gate);
-  return withSession(request, event);
 }
 
 export const config = {

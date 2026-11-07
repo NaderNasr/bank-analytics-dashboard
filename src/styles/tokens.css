@@ -53,6 +53,19 @@
   /* Focus */
   --ring: #2563eb;
 
+  /* Charts (validated with the dataviz palette checks: CVD separation, lightness, 3:1 contrast).
+     Series 1 = income (blue), series 2 = spending (gold). Heat = one-hue sequential ramp. */
+  --chart-1: #2a78d6;
+  --chart-2: #c98500;
+  --chart-grid: #e6ebf2;
+  --chart-axis: #4b5869;
+  --heat-0: #eef2f7;
+  --heat-1: #dbe7f8;
+  --heat-2: #a9c6ef;
+  --heat-3: #6a9de3;
+  --heat-4: #2a78d6;
+  --heat-5: #1b4f99;
+
   /* Elevation */
   --shadow-card: 0 1px 2px rgb(11 18 32 / 0.06), 0 1px 3px rgb(11 18 32 / 0.08);
   --shadow-overlay: 0 12px 32px rgb(11 18 32 / 0.18);
@@ -88,6 +101,16 @@
     --negative-soft: #2a1215;
     --on-negative-soft: #fca5a5;
     --ring: #7ea6f7;
+    --chart-1: #3987e5;
+    --chart-2: #c98500;
+    --chart-grid: #1c2944;
+    --chart-axis: #9aa8bd;
+    --heat-0: #16213a;
+    --heat-1: #1c2f55;
+    --heat-2: #24467d;
+    --heat-3: #2f66b8;
+    --heat-4: #3987e5;
+    --heat-5: #8db7f2;
     --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
     --shadow-overlay: 0 12px 32px rgb(0 0 0 / 0.5);
     --scrim: rgb(0 0 0 / 0.6);
@@ -122,6 +145,16 @@
   --negative-soft: #2a1215;
   --on-negative-soft: #fca5a5;
   --ring: #7ea6f7;
+  --chart-1: #3987e5;
+  --chart-2: #c98500;
+  --chart-grid: #1c2944;
+  --chart-axis: #9aa8bd;
+  --heat-0: #16213a;
+  --heat-1: #1c2f55;
+  --heat-2: #24467d;
+  --heat-3: #2f66b8;
+  --heat-4: #3987e5;
+  --heat-5: #8db7f2;
   --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
   --shadow-overlay: 0 12px 32px rgb(0 0 0 / 0.5);
   --scrim: rgb(0 0 0 / 0.6);

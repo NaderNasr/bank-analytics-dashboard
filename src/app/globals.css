@@ -32,6 +32,9 @@
   --color-on-negative-soft: var(--on-negative-soft);
   --color-ring: var(--ring);
   --color-scrim: var(--scrim);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-grid: var(--chart-grid);
 
   --shadow-card: var(--shadow-card);
   --shadow-overlay: var(--shadow-overlay);
