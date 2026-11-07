@@ -1,7 +1,7 @@
 # Bank Analytics Dashboard
 
 A retail banking analytics demo: transactions explorer, overview dashboard, live markets panel,
-English and Arabic (RTL). Work in progress, built phase by phase. Architecture decisions are
+English and Arabic (RTL), light and dark themes. Work in progress, built phase by phase. Architecture decisions are
 recorded in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Requirements
@@ -16,6 +16,7 @@ recorded in [docs/DECISIONS.md](docs/DECISIONS.md).
 2. `npm run db:migrate` creates the tables.
 3. `npm run db:seed` loads the demo customer (about 12,000 transactions; replaces existing data).
 4. `npm run dev`, open http://localhost:3000 and sign in with the demo account shown on the page.
+   Pages live under `/en/…` and `/ar/…` (Arabic is right-to-left).
 
 ## Scripts
 

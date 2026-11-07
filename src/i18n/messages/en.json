@@ -1,0 +1,73 @@
+{
+  "Metadata": {
+    "title": "Bank Analytics",
+    "description": "A retail banking analytics demo with simulated data for one customer."
+  },
+  "Brand": {
+    "name": "Bank Analytics"
+  },
+  "Nav": {
+    "label": "Main",
+    "overview": "Overview",
+    "transactions": "Transactions",
+    "markets": "Markets"
+  },
+  "Shell": {
+    "skipToContent": "Skip to content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "switchTo": "العربية",
+    "switchToLabel": "Switch to Arabic",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "signOut": "Sign out",
+    "secureSession": "Encrypted session",
+    "member": "Gold member",
+    "demoData": "Simulated data"
+  },
+  "SignIn": {
+    "title": "Sign in",
+    "subtitle": "A demo with simulated data for one customer.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "demoHeading": "Demo account",
+    "useDemo": "Use demo account",
+    "errors": {
+      "invalid_input": "Check the highlighted fields and try again.",
+      "invalid_credentials": "That email and password don't match our records.",
+      "demo_user_missing": "Signed in, but the demo customer isn't in the database yet. Run `npm run db:seed` and try again.",
+      "server_error": "We couldn't sign you in right now. Please try again in a moment."
+    },
+    "fields": {
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "Enter a valid email address.",
+      "emailTooLong": "That email address is too long.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooLong": "That password is too long."
+    }
+  },
+  "Overview": {
+    "title": "Overview",
+    "greeting": "Welcome back, {name}",
+    "signedInAs": "Signed in as {name}.",
+    "comingSoon": "Charts, KPIs and the spending heatmap arrive in Phase 4."
+  },
+  "Transactions": {
+    "title": "Transactions",
+    "comingSoon": "The searchable, filterable transactions explorer arrives in Phase 5."
+  },
+  "Markets": {
+    "title": "Markets",
+    "comingSoon": "Live market prices arrive in Phase 6."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist.",
+    "home": "Go to overview"
+  }
+}

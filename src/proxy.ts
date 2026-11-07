@@ -1,18 +1,32 @@
 import type { NextAuthRequest } from "next-auth";
+import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 
-import { safeCallbackUrl, SIGN_IN_PATH, signInUrlFor } from "@/lib/auth/callback-url";
+import { routing } from "@/i18n/routing";
+import {
+  homePath,
+  isSignInPath,
+  localeOfPath,
+  safeCallbackUrl,
+  signInUrlFor,
+} from "@/lib/auth/callback-url";
 import { auth } from "@/server/auth";
 
+const intl = createIntlMiddleware(routing);
+
 /**
- * Gatekeeper for every page and API route. Anonymous page requests go to the sign-in page with a
- * callback; anonymous API requests get a JSON 401 (an API client cannot follow a redirect to a
- * form). Signed-in users visiting the sign-in page are sent on to where they were going.
+ * Gatekeeper for every page and API route.
  *
- * Route handlers check the session again (see withUser), so this is not the only line of defence.
+ * - API: anonymous calls get a JSON 401 (an API client cannot follow a redirect to a form).
+ * - Pages without a locale (`/`, `/transactions`): next-intl redirects to /en/… or /ar/…, picked
+ *   from the NEXT_LOCALE cookie or Accept-Language. Auth runs on the follow-up request.
+ * - Sign-in page: anonymous users see it; signed-in users go on to their callback.
+ * - Anything else needs a session, or redirects to /{locale}/sign-in?callbackUrl=….
+ *
+ * Route handlers and pages check the session again, so this is not the only line of defence.
  */
 function gate(request: NextAuthRequest, _event: NextFetchEvent) {
-  const { pathname, search, searchParams } = request.nextUrl;
+  const { pathname, search, searchParams, origin } = request.nextUrl;
   const signedIn = Boolean(request.auth?.user?.id);
 
   if (pathname.startsWith("/api/")) {
@@ -23,15 +37,17 @@ function gate(request: NextAuthRequest, _event: NextFetchEvent) {
     );
   }
 
-  if (pathname === SIGN_IN_PATH) {
-    if (!signedIn) return NextResponse.next();
-    const target = safeCallbackUrl(searchParams.get("callbackUrl"));
-    return NextResponse.redirect(new URL(target, request.nextUrl.origin));
+  const locale = localeOfPath(pathname);
+  if (!locale) return intl(request);
+
+  if (isSignInPath(pathname)) {
+    if (!signedIn) return intl(request);
+    const target = safeCallbackUrl(searchParams.get("callbackUrl"), homePath(locale));
+    return NextResponse.redirect(new URL(target, origin));
   }
 
-  if (signedIn) return NextResponse.next();
-  const signInUrl = signInUrlFor(`${pathname}${search}`);
-  return NextResponse.redirect(new URL(signInUrl, request.nextUrl.origin));
+  if (signedIn) return intl(request);
+  return NextResponse.redirect(new URL(signInUrlFor(`${pathname}${search}`, locale), origin));
 }
 
 /**

@@ -264,3 +264,55 @@ transaction mode) and `DATABASE_URL_UNPOOLED` (direct) into `.env.local`. Hostin
   not depend on transaction-mode pooling.
 - `sslmode=verify-full` in connection strings, which is what `sslmode=require` means in `pg` today
   and silences its deprecation warning.
+
+## 007 — Design tokens, app shell, English and Arabic
+
+**Date:** 2026-11-07 · **Phase:** 3
+
+### Context
+
+The brief asks for a fintech look that signals loyalty and security, the Onest typeface, an app
+shell, English and Arabic with full right-to-left support, and logical CSS properties only. The
+visual direction was generated with the UI UX Pro Max skill and approved from a preview.
+
+### Decision
+
+- **Palette ("Banking / Traditional Finance").** Navy for security and trust (navigation rail,
+  primary actions), gold for loyalty and reward, used only as an accent: the active nav marker,
+  the membership badge and short dividers. The skill's first suggestion for "fintech" was gold
+  with purple on dark glass, aimed at crypto; it contradicted the brief and the skill's own
+  "avoid AI purple" rule, so the Financial Dashboard style (data-dense, minimal) was used instead.
+- **Accessibility as a token property.** Every text/background pair is at least 4.5:1 in both
+  themes, and form-control borders and focus rings are at least 3:1. Decorative dividers
+  (`--border`) are separate from control borders (`--border-strong`) so a subtle divider never
+  weakens a form field.
+- **Tokens in one file** (`src/styles/tokens.css`), mapped to Tailwind names in `globals.css`
+  (`bg-surface`, `text-fg-muted`, `bg-gold-accent`…). Components never contain hex values.
+- **Theme:** light by default, dark from `prefers-color-scheme`, overridable with a toggle
+  (System → Light → Dark) stored in `localStorage` and applied by a tiny inline script before
+  first paint, so there is no flash and no cookie read that would make pages dynamic.
+- **Fonts:** Onest (Latin) and Noto Sans Arabic via `next/font`, self-hosted at build time, in
+  one stack. Onest has no Arabic glyphs, so Arabic falls through to Noto per character while
+  Latin text and digits stay in Onest in both languages.
+- **i18n with next-intl, locale in the URL** (`/en/…`, `/ar/…`, `localePrefix: "always"`).
+  A cookie-based locale would make every page read cookies and lose its static shell under
+  Cache Components; with `[locale]` + `generateStaticParams` + `setRequestLocale`, all pages are
+  partially prerendered in both languages. The proxy runs auth first and then next-intl;
+  locale-less paths redirect by cookie or `Accept-Language`. Sign-in callbacks keep the locale.
+- **RTL:** `<html dir>` comes from the locale, and layout uses logical properties only
+  (`ms-`, `ps-`, `start-`, `border-e`, `text-start`). A unit test scans every component and
+  stylesheet and fails on physical left/right utilities or properties. Directional icons
+  (sign out) mirror with `rtl:-scale-x-100`; emails and passwords stay `dir="ltr"`.
+- **Shell:** navy sidebar on the inline-start side on large screens; below `lg` it becomes a
+  native `<dialog>` drawer (focus trap, Escape, inert background for free). Icon buttons are
+  44px on small screens. The user menu reads the session behind `<Suspense>`.
+- **Translations are checked:** a test asserts Arabic and English have the same keys and the same
+  `{placeholders}`. Sign-in validation errors are translation keys, resolved in the form.
+
+### Alternatives considered
+
+- **next-themes.** Does the same with more surface; the inline script is 200 bytes.
+- **Locale from a cookie only (no URL prefix).** Cleaner URLs, but dynamic rendering for every
+  page and links that can't be shared per language.
+- **IBM Plex Sans Arabic** for Arabic. Close in tone; Noto Sans Arabic was the skill's
+  highest-ranked Arabic sans and has a wider weight range.
